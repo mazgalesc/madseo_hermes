@@ -1,0 +1,67 @@
+# l'autore SEO: 12-Month Strategic Roadmap Logic
+
+This reference governs the autonomous generation of long-term SEO growth plans. It uses a phased approach to build authority and displace competitors, integrated with WordPress category taxonomies.
+
+## 1. Come si calcola la priorità (riscritto il 01/10/2026)
+
+**La formula che stava qui** — `Priority Score = (Monthly Search Volume + Business Value [1-10]) /
+Keyword Difficulty` — **non si applica**, e non perché sia sbagliata in teoria: perché su questa
+macchina **volume mensile e difficoltà non esistono**. Verificato il 01/10/2026: le connessioni attive
+sono tre (`google-analytics-admin`, `google-analytics-data`, `google-search-console`), nessun Google
+Ads, nessun Semrush/Ahrefs. Una formula che chiede quei due dati produce **numeri inventati**.
+
+**Quello che si usa al suo posto, in due passaggi:**
+
+1. **La domanda già misurata (Search Console).** Per ogni candidata si legge quello che esiste già:
+   **impression** (quanta domanda intercettiamo), **posizione media** (quanto siamo vicini), **clic e
+   CTR** (se il clic lo vinciamo). Il caso d'oro è **impression alte + posizione 5-20**: è la distanza
+   più corta fra noi e la prima pagina.
+2. **Il valore di business dichiarato (1-10).** Un numero che decide **l'autore**, non l'agente: quanto
+   quella domanda è vicina a un contatto o a un acquisto. Va scritto accanto alla voce di piano, così
+   resta confrontabile fra voci diverse.
+
+**Le tre famiglie di priorità:**
+
+- **Vittoria vicina**: impression già presenti, posizione 5-20, valore dichiarato ≥ 6 → si lavora subito.
+- **Costruzione**: nessuna impression (domanda nuova per il sito), valore alto → si lavora **dopo**,
+  perché prima serve autorità sull'argomento.
+- **Da non fare**: valore dichiarato 0-2, oppure intento **navigazionale** → non entra in piano.
+
+- **Topical Clusters**: Grouping keywords into silos to boost authority. *(resta valido: è la ragione
+  per cui si costruiscono prima i temi vicini e poi quelli larghi.)*
+
+Il dettaglio dei fattori, delle metriche e delle trappole sta in `parole-chiave.md`.
+
+## 2. The 3-Phase Roadmap
+
+### Phase 1: Foundations (Months 1-3)
+**Objective**: Establish a footprint and secure early traffic.
+- **Focus**: Long-tail keywords, Low competition (Difficulty < 30).
+- **Strategy**: 
+    - Focus on **TOFU (Awareness)** content.
+    - Map to general WordPress categories (e.g., "Guides", "News").
+    - Establish Topical Authority by covering basic concepts.
+
+### Phase 2: Authority Building (Months 4-6)
+**Objective**: Command topical authority in core clusters.
+- **Focus**: Mid-difficulty keywords (Difficulty 30-60).
+- **Strategy**:
+    - Shift towards **MOFU (Consideration)** content.
+    - Map to technical/specific WordPress categories (e.g., "SEO", "Plugins").
+    - Create "Skyscraper" Pillar content (2500+ words) to anchor clusters.
+
+### Phase 3: Competitive Acquisition (Months 7-12)
+**Objective**: Displace market leaders for high-volume terms.
+- **Focus**: High difficulty keywords (Difficulty 60+).
+- **Strategy**:
+    - Increase **BOFU (Decision)** content ratio.
+    - Map to conversion categories (e.g., "Case Studies", "Tools").
+    - Targeted "Thin Spot" takeover articles based on competitor gaps found via WordPress content audits.
+
+## 3. Publication Frequency
+The roadmap does not assume a fixed number of posts. It adapts to the user's configured **`publication_days`**:
+- **1 Day/Week**: ~52 posts/year.
+- **3 Days/Week**: ~156 posts/year.
+- **5 Days/Week**: ~260 posts/year.
+
+The 50/30/20 Funnel Rule remains the guiding principle for distribution regardless of frequency.

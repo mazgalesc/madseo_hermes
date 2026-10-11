@@ -1,0 +1,27 @@
+.DS_Store
+backup/
+
+# Credenziali e segreti: non devono mai entrare in un repository pubblico
+.env
+.env.*
+*.env
+*.env.local
+secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+credentials*
+*token*
+*cookie*
+
+# Database locali e cache
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/

@@ -8,10 +8,11 @@ The `content_calendar` table stores all planned, drafted, and published content 
 
 ### Schema Definition
 
-**Questo è lo schema vero, riletto dal database il 01/10/2026 con `.schema content_calendar`** — non
-quello che si sperava di avere. Le due colonne finali (`article_title`, `article_slug`) sono state
-aggiunte dopo la stesura di questo documento e qui erano assenti: la tabella senza di esse è
-incompleta.
+**Questo è lo schema completo: si legge da qui e si copia da qui.** Una installazione nuova crea la
+tabella con questo blocco **una volta sola**, comprese le cinque colonne in fondo (`keyword_primaria`,
+`intento`, `refresh_at`, `promessa`, `copre_gia`): sono le nostre, aggiunte il 01/10/2026 e l'11/10/2026
+alla tabella dell'autore, e senza di esse il controllo dei duplicati non ha niente da confrontare. Su un
+database che esiste già si aggiungono con `ALTER TABLE content_calendar ADD COLUMN …`, una per una.
 
 ```sql
 CREATE TABLE content_calendar (
@@ -26,7 +27,12 @@ CREATE TABLE content_calendar (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     article_title TEXT,
-    article_slug TEXT
+    article_slug TEXT,
+    keyword_primaria TEXT,
+    intento TEXT,
+    refresh_at DATE,
+    promessa TEXT,
+    copre_gia TEXT
 );
 ```
 

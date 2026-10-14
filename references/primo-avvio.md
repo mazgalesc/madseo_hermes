@@ -7,11 +7,18 @@ altre procedure chiedono cose che non esistono.
 **Chi fa cosa**: l'autore fornisce i valori e fa i login; l'agente crea, verifica e prova. **L'agente non
 inventa nessun valore**: quello che non sa, lo chiede.
 
+**Da dove si lanciano i comandi.** I comandi di questa skill usano percorsi **relativi** (`scripts/…`): si
+eseguono **dalla cartella della skill** — `~/.hermes/skills/productivity/seo-content/`, o
+`~/.hermes/skills/<categoria>/<nome>/` se è installata altrove. Da un'altra cartella si usa il percorso
+completo (`python3 ~/.hermes/skills/productivity/seo-content/scripts/verifica-avvio.py`) oppure si entra
+prima nella cartella con `cd`. È il primo intoppo di chi arriva da fuori, e non dà un errore che lo spieghi:
+dice solo che il file non esiste.
+
 ## Prima di cominciare: cosa serve
 
 | # | Cosa | Chi | Obbligatorio? | Se manca |
 |---|---|---|---|---|
-| 1 | Cartella di lavoro con `content/`, `audits/`, `distribution/`, `shared/` | agente | sì | si crea (passo 1) |
+| 1 | Cartella di lavoro con `content/`, `audits/`, `distribution/`, `shared/`, `archivio/` | agente | sì | si crea (passo 1) |
 | 2 | Database del piano: `shared/lavoro.db`, tabella `content_calendar` | agente | sì | si crea (passo 2) |
 | 3 | Credenziali WordPress (application password) | **l'autore** | sì, per scrivere bozze | si lavora in sola lettura (pagine pubbliche) e si dichiara |
 | 4 | Server MCP del sito in Hermes | agente, valori dall'autore | consigliato | bozze e contenuti via REST, più lento e incompleto |
@@ -24,7 +31,7 @@ inventa nessun valore**: quello che non sa, lo chiede.
 
 ### 1. La cartella di lavoro
 ```bash
-mkdir -p ~/seo-content/{content,audits,distribution,shared}
+mkdir -p ~/seo-content/{content,audits,distribution,shared,archivio}
 ```
 È il posto dove vivono i rapporti e il piano editoriale: **fuori dall'albero della skill**, così gli
 aggiornamenti della skill non li toccano. Se si sceglie un altro percorso, si scrive in `SEO_WORK_DIR`.
@@ -32,6 +39,20 @@ aggiornamenti della skill non li toccano. Se si sceglie un altro percorso, si sc
 ### 2. Il database del piano
 Tabella `content_calendar` con le colonne di `db-schema.md` (comprese `promessa` e `copre_gia`). Senza
 `promessa` il controllo dei duplicati non ha niente da confrontare: è la colonna che conta.
+
+**Con il comando.** Non si scrive il `CREATE TABLE` a mano: **lo schema completo (17 colonne) è in
+`db-schema.md`** e si copia da lì. Il file del database non esiste finché non glielo si fa creare da
+`sqlite3`, quindi si passa il blocco direttamente:
+
+```bash
+sqlite3 ~/seo-content/shared/lavoro.db < schema.sql   # con il CREATE TABLE di db-schema.md in schema.sql
+```
+
+Attenzione a due cose: **lo schema completo include le cinque colonne aggiunte** (`keyword_primaria`,
+`intento`, `refresh_at`, `promessa`, `copre_gia`) — crearne una versione ridotta significa rimediare dopo con
+cinque `ALTER TABLE`; e il file **non si cancella per sbloccarlo** se risulta `database is locked` (le note
+di esercizio sono in `db-schema.md`).
+
 Verifica: la tabella esiste e si apre.
 
 ### 3. Le credenziali (le fa l'autore, mai in chat)
@@ -39,6 +60,13 @@ Verifica: la tabella esiste e si apre.
   chat**, in un file con permessi 600 (proposta: `~/.hermes/secrets/wp-credentials.env`).
 - Credenziale per l'MCP del sito (Basic auth) in `~/.hermes/.env`.
 L'agente **non scrive password in chat, non le ripete, non le mette nel repository**.
+
+**Come si chiamano le voci.** Nel file servono due righe: una che finisce in **`_USER`** (l'utente di
+WordPress) e una che finisce in **`_APP_PASSWORD`** (l'application password). **Il prefisso è libero**
+(`WP_`, il nome del sito, quel che si vuole): gli script riconoscono la chiave **dal suffisso**, quindi la
+seconda metà del nome non è una scelta, la prima sì. Un file vuoto coi permessi già giusti si crea con
+`touch ~/.hermes/secrets/wp-credentials.env && chmod 600 ~/.hermes/secrets/wp-credentials.env`.
+Verifica: `ls -l` deve mostrare `-rw-------`.
 
 ### 4. Il server MCP del sito
 ```bash
@@ -93,7 +121,7 @@ immagini, Scrapling e `ddgs` sono **opzionali** e hanno il loro ripiego — non 
 
 ## Il controllo finale
 
-- [ ] cartella di lavoro con le quattro sottocartelle e il database con la tabella
+- [ ] cartella di lavoro con le cinque sottocartelle (`content`, `audits`, `distribution`, `shared`, `archivio`) e il database con la tabella
 - [ ] credenziali consegnate fuori chat, file con permessi 600
 - [ ] server MCP: l'`initialize` risponde
 - [ ] variabili d'ambiente impostate e provate con uno script

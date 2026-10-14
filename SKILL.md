@@ -74,7 +74,7 @@ esempio e vanno adattati prima di usare la skill.
 
 | Cosa | Dove |
 |---|---|
-| Cartella di lavoro | `~/seo-content/` — `content/` (bozze e immagini), `audits/` (analisi), `distribution/` (pillar→social), `shared/` (stato, calendario) |
+| Cartella di lavoro | `~/seo-content/` — `content/` (bozze e immagini), `audits/` (analisi), `distribution/` (pillar→social), `shared/` (stato, calendario), `archivio/` (materiale storico: rapporti passati, correzioni, istantanee) |
 | **Vault Obsidian** | percorso scelto dall'autore (esempio: `~/Documents/hermes`), dichiarato in `OBSIDIAN_VAULT_PATH` — **dove vivono le note dei contenuti, delle promesse e della ricerca**: `references/vault-obsidian.md` |
 | Credenziali WordPress | `~/.hermes/secrets/wp-credentials.env` (600): `WP_USER`, `WP_APP_PASSWORD` |
 | Chiavi in `.env` | `MATON_API_KEY` (Search Console, Analytics), `GOOGLE_API_KEY` (immagini), `BRAVE_SEARCH_API_KEY` / `EXA_API_KEY` / `TAVILY_API_KEY` (motori di `web_search`), `WP_BASIC_AUTH` (autenticazione dell'MCP) |

@@ -121,7 +121,7 @@ def main() -> None:
     temp = pathlib.Path("/tmp/verifica-avvio.out")
 
     # 1. cartella di lavoro
-    mancanti = [c for c in ("content", "audits", "distribution", "shared") if not (LAVORO / c).is_dir()]
+    mancanti = [c for c in ("content", "audits", "distribution", "shared", "archivio") if not (LAVORO / c).is_dir()]
     segna("Cartella di lavoro", "OK" if not mancanti else "DA FARE",
           f"{LAVORO}" + (f" — mancano: {', '.join(mancanti)}" if mancanti else ""))
 

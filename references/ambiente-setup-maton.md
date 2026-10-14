@@ -121,7 +121,10 @@ Base `https://api.maton.ai`, header `Authorization: Bearer $MATON_API_KEY`, limi
 
 `template.il-tuo-sito.it` **non è collegato**: né in Search Console né in Analytics. Se serve, va aggiunto prima.
 
-Esempi di chiamata:
+Esempi di chiamata. **Per l'uso normale di Search Console non si scrive questo curl a mano**: si usa
+**`gsc.py`** della skill `seo-keyword-research` (ordina per impression, totalizza il CTR, gestisce la
+codifica del percorso della proprietà). I curl qui sotto restano per quello che gli script **non** fanno —
+per esempio `urlInspection/index:inspect`, che dice se una URL è indicizzata:
 ```bash
 # Search Console: ultime 28 giornate, query e pagine
 curl -s https://api.maton.ai/google-search-console/webmasters/v3/sites/https%3A%2F%2Fil-tuo-sito.it%2F/searchAnalytics/query \

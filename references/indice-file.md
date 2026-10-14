@@ -18,21 +18,21 @@ il file è cambiato — aggiornare la riga).
 
 | File | Cosa contiene | Peso |
 |---|---|---|
-| **`references/ricerca-webcmd.md`** | il giro di ricerca: ambiente e sessione, i programmi (SERP, Quora, Reddit, X, LinkedIn), come si legge una SERP, il blocco «Le persone hanno chiesto anche», la controprova dei suggerimenti, i segnali da non lasciar passare | 19 KB |
+| **`references/ricerca-webcmd.md`** | il giro di ricerca: ambiente e sessione, i programmi (SERP, Quora, Reddit, X, LinkedIn), come si legge una SERP, il blocco «Le persone hanno chiesto anche», la controprova dei suggerimenti, i segnali da non lasciar passare | 25 KB |
 | **`references/ricerca-omnichannel.md`** | i canali della ricerca in ordine di lavoro, cosa si cerca in ciascuno, cosa si scrive nel rapporto | 10 KB |
 | **`references/parole-chiave.md`** | **quali parole chiave scegliere e perché**: prima l'intento poi il volume, le 4 categorie di intento lette dalla SERP, i 5 passi, **cosa possiamo misurare — due livelli: gratis sempre, a pagamento opzionale (DataForSEO) con le regole anti-spreco**, una keyword primaria = un contenuto, la revisione trimestrale | 13 KB |
 | **`references/scrittura-articolo.md`** | come si scrive un articolo: **il test prima di scrivere**, le regole editoriali e il livello del lettore, formato e lunghezza, i blocchi dell'editor, il blocco FAQ, il glossario | 23 KB |
-| **`references/audit-contenuti-pubblicati.md`** | il giro di verifica degli articoli **già pubblicati**: le 5 fonti, la pagina intera al secondo lettore, le trappole della misurazione (i difetti falsi), dove sta la causa, la forma del rapporto | ≈12 KB |
+| **`references/audit-contenuti-pubblicati.md`** | il giro di verifica degli articoli **già pubblicati**: le 5 fonti, la pagina intera al secondo lettore, le trappole della misurazione (i difetti falsi), dove sta la causa, la forma del rapporto | ≈33 KB |
 | **`references/audit-bozze.md`** | il giro di verifica delle **bozze**: cosa cambia rispetto ai pubblicati, i campi da controllare, i comandi che verificano citazioni e dati, i difetti che ricorrono in tutte le bozze, la forma del rapporto | *(peso da misurare)* |
 | **`references/ambiente-setup-maton.md`** | **l'ambiente**: comando di controllo, componenti (MCP, REST, Maton, Scrapling, webcmd, immagini, **fonti facoltative: DataForSEO, Bing Webmaster, Parallel**), configurazione webcmd, accessi, siti disponibili, chiamate a Search Console e Analytics | ≈13 KB |
 | **`references/abilita-mcp.md`** | **il catalogo MCP**: abilità `seo/*` e `gutenberg/*`, lettura e scrittura a blocchi, la trappola `id`/`post_id`, i valori di stile del tema, i pattern | ≈8 KB |
-| **`references/primo-avvio.md`** | **la procedura 0 in dettaglio**: cosa serve, gli 8 passi con i comandi, il controllo finale, il template di `CONFIGURAZIONE.md` | ≈5 KB |
+| **`references/primo-avvio.md`** | **la procedura 0 in dettaglio**: cosa serve, gli 8 passi con i comandi, il controllo finale, il template di `CONFIGURAZIONE.md` | ≈7 KB |
 | **`references/configurazione.md`** | **i nomi generici del testo e i valori reali di una installazione**: la mappa dei nomi, le variabili d'ambiente degli script (**comprese le facoltative**), la regola «nessun valore di una installazione entra nel repository» | ≈3 KB |
 | **`references/vault-obsidian.md`** | **il progetto editoriale in un vault Obsidian**: la nota di un contenuto (promessa, struttura, collegamenti, fonti con le date, verifiche), la struttura delle cartelle, il ponte col database, e perché il grafo mostra le pagine orfane | ≈7 KB |
 | **`references/pianificazione-e-duplicati.md`** | **prima di scegliere un titolo**: l'inventario in quattro elenchi, la promessa di un contenuto, il confronto sui contenuti vivi, la mappa del cluster, le pagine orfane | ≈8 KB |
 | **`references/fonti.md`** | **a chi credere**: la gerarchia delle fonti (ufficiale → normativa/scientifica → API → stampa → community), i divieti (attribuzioni anonime, dataset e «team» inventati), le prove di prima mano, il «non l'ho verificato» | ≈8 KB |
 | **`references/controlli-verifica.md`** | **prima di dire «pronto»**: i controlli incrociati che mancavano — conteggi annunciati vs elenchi, aritmetica, riquadro vs corpo, sintesi vs prova, promesse, blocchi, artefatti, alt, affiliazione | ≈10 KB |
-| **`references/pubblicazione-e-contributi.md`** | **portare la skill su una repo pubblica**: la scansione dei segreti (e la trappola del valore troncato dalla shell), cosa rendere generico, licenza, igiene del commit, cosa deve contenere una PR | ≈5 KB |
+| **`references/pubblicazione-e-contributi.md`** | **portare la skill su una repo pubblica**: la scansione dei segreti (e la trappola del valore troncato dalla shell), cosa rendere generico, licenza, igiene del commit, cosa deve contenere una PR | ≈11 KB |
 | **`references/trappole.md`** | **tutte** le trappole verificate in un file solo: codici HTTP, fonti, pagine a zero impression, schema, meta, marcatori rotti, blocchi e media, domanda, bozze | 39 KB |
 | **`references/regole-di-controllo.md`** | le regole dettate dall'autore il 30/09/2026 e come si applicano a ogni passo | 3 KB |
 
@@ -40,7 +40,7 @@ il file è cambiato — aggiornare la riga).
 
 | File | Cosa contiene | Peso |
 |---|---|---|
-| **`references/immagini-e-stili.md`** | WebP non PNG, alt, pesi misurati, stile di copertine e infografiche | 6 KB |
+| **`references/immagini-e-stili.md`** | WebP non PNG, alt, pesi misurati, stile di copertine e infografiche | 9 KB |
 | **`references/stile-copertine.md`** | lo stile delle immagini in evidenza, misurato sul sito | 4 KB |
 | **`references/stile-infografiche.md`** | lo stile delle infografiche dentro gli articoli, misurato sul sito | 5 KB |
 | **`references/nomi-e-query.md`** | la regola dei nomi, i suggerimenti sbagliati, le sigle ambigue, i suffissi delle varianti immagine, le trappole delle abilità MCP | 4 KB |
@@ -64,7 +64,7 @@ non vale qui, e la riga dice quale; *da verificare* = non è stata controllata c
 | **`references/geo-sync-logic.md`** | ancoraggio delle relazioni per l'AI search | 1 KB | **vivo** |
 | **`references/local-compliance-benchmarks.md`** | standard di SEO locale e conformità | 1 KB | **da verificare** — il sito non ha Local Business configurato: da controllare prima di usarlo |
 | **`references/humanizer_config.json`** | le parole bandite della passata di umanizzazione | 1 KB | **vivo** — usato dal §4 del `SKILL.md` |
-| **`references/db-schema.md`** | la tabella `content_calendar`, colonne e stato del riempimento | 4 KB | **vivo** — corretto il 01/10/2026 (mancavano due colonne, e le tre nuove non c'erano) |
+| **`references/db-schema.md`** | la tabella `content_calendar`, colonne e stato del riempimento | 6 KB | **vivo** — corretto il 01/10/2026 (mancavano due colonne, e le tre nuove non c'erano) |
 
 **⚠️ Nota sui documenti dell'autore (aggiornato il 14/10/2026).** Due di questi chiedono cose che su
 questa macchina **non si usano** e vanno letti con questa avvertenza:

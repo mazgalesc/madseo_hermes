@@ -109,11 +109,11 @@ Comandi, endpoint e dettaglio operativo stanno nella skill **`seo-keyword-resear
 affiliazione, guide AI, strumenti AI) e i problemi che il lettore ha davanti. Si pensa a come
 digiterebbe lui: «come», «quanto costa», «perché non funziona», «quale scegliere».
 
-**Passo 2 — Espansione con i suggerimenti Google.** `suggestqueries.google.com` con
-`client=chrome&hl=it&gl=it`. La risposta **non è sempre UTF-8 valida**: su una lettera accentata la lettura
-stretta muore con `UnicodeDecodeError` e la chiamata sembra rotta quando invece ha risposto. Si legge
-tollerante (`utf-8` con `errors="replace"`, altrimenti `latin-1`) e si prosegue. Dà le varianti in italiano
-che le persone digitano davvero.
+**Passo 2 — Espansione con i suggerimenti.** Si usa **`suggest.py`** della skill `seo-keyword-research`
+(Google + Bing, senza chiavi, nessun account): dà le varianti in italiano che le persone digitano davvero, e
+gestisce da sé la **trappola della decodifica** — la risposta non è sempre UTF-8 valido, e la lettura
+rigida muore con `UnicodeDecodeError` o rende gli accenti storti. Se serve a mano:
+`suggestqueries.google.com/complete/search?client=chrome&hl=it&gl=it&q=…`.
 **La verifica si fa digitando la FRASE INTERA, non la radice** (lezione del `1883`, verificata rifacendo
 la prova): con la sola radice compaiono le estensioni più generiche e si crede che esista una frase che
 nessuno cerca. E il numero di suggerimenti non è una prova di volume: è un indizio sulla forma della

@@ -36,14 +36,14 @@ passi non eseguiti.
 
 ### Il dettaglio dei canali
 
-1. **Espandi le query**: `suggestqueries.google.com` con `client=chrome&hl=it&gl=it` (decodifica
-   **UTF-8**, non latin-1) dà le varianti che le persone digitano davvero, **in italiano**. Con un
+1. **Espandi le query** con **`suggest.py`** della skill `seo-keyword-research`
+   (`client=chrome&hl=it&gl=it`): dà le varianti che le persone digitano davvero, **in italiano**. Con un
    seme italiano i risultati sono italiani; con un seme internazionale ("strategia seo") arrivano
    anche varianti straniere.
-   **Verificato il 29/09/2026**: decodificando in `latin-1` gli accenti escono rotti (`perchÃ¨` al
-   posto di `perché`); con `utf-8` sono giusti. Il `latin-1` che la skill prescriveva prima è
-   sbagliato su questa resa: usare `decode("utf-8", "replace")` e, se il testo mostra mojibake,
-   cambiare decodifica invece di incolpare Google.
+   **La decodifica è la trappola di questo endpoint** — **verificato il 29/09/2026**: in `latin-1` gli
+   accenti escono rotti (`perchÃ¨` al posto di `perché`); la resa è **UTF-8**. Si legge
+   `decode("utf-8", "replace")` (ed è quello che `suggest.py` fa già) e, se il testo mostra mojibake, si
+   cambia decodifica invece di incolpare Google.
 #### 2. Contesto interno
 
 2. **Contesto interno letto per PROMESSE, non per titoli**: inventario dei contenuti pubblicati, in bozza,

@@ -162,24 +162,44 @@ def _testo(d: dict) -> str:
     return ((d.get("result") or {}).get("content") or [{}])[0].get("text", "")
 
 
-def _risolvi(segreti: dict, nome: str) -> str:
-    """`seo/get-site-seo-summary` -> `madweb-seo/get-site-seo-summary`.
-
-    Il namespace delle abilità è **generico** nel testo della skill (`seo/*`, vedi
-    `configurazione.md`) e cambia da installazione a installazione: si scopre dall'elenco invece
-    di darlo per scontato. Un nome già valido passa intatto.
-    """
+def _elenco(segreti: dict) -> dict:
+    """Le abilità del sito (nome -> voce), prese una volta sola."""
     if not _ELENCO:
         try:
             voci = (json.loads(_testo(_chiama(segreti, "mcp-adapter-discover-abilities", {}))) or {}).get("abilities") or []
         except Exception:  # noqa: BLE001
             voci = []
         _ELENCO.update({v["name"]: v for v in voci if isinstance(v, dict) and v.get("name")})
-    if nome in _ELENCO or not _ELENCO:
+    return _ELENCO
+
+
+def _risolvi(segreti: dict, nome: str) -> str:
+    """`seo/get-site-seo-summary` -> `madweb-seo/get-site-seo-summary`.
+
+    Il namespace delle abilità è **generico** nel testo della skill (`seo/*`, vedi
+    `configurazione.md`) e cambia da installazione a installazione: si scopre dall'elenco invece
+    di darlo per scontato. Un nome già valido passa intatto.
+
+    Quando il nome corto esiste in più namespace **non si indovina**. `get-settings` sta in
+    quattro (`madtheme`, `madlinks`, `madweb-seo`, `madleads`): prendere il primo in ordine
+    alfabetico significa leggere le impostazioni del plugin dei contatti credendo che siano
+    quelle SEO — e, con `update-settings`, **scrivere nel plugin sbagliato**. Quindi si preferisce
+    chi contiene la parola del namespace generico (`seo` dentro `madweb-seo`) e, se resta ambiguo,
+    si restituisce il nome com'era: la chiamata fallisce in modo visibile, che è il male minore.
+    """
+    elenco = _elenco(segreti)
+    if nome in elenco or not elenco:
         return nome
     corto = nome.split("/", 1)[-1]
-    candidati = sorted(n for n in _ELENCO if n.endswith("/" + corto))
-    return candidati[0] if candidati else nome
+    candidati = sorted(n for n in elenco if n.endswith("/" + corto))
+    if len(candidati) == 1:
+        return candidati[0]
+    generico = nome.split("/", 1)[0].lower()
+    if generico and len(candidati) > 1:
+        con_generico = [n for n in candidati if generico in n.split("/")[0].lower()]
+        if len(con_generico) == 1:
+            return con_generico[0]
+    return nome
 
 
 def abilita(segreti: dict, nome: str, parametri: dict | None = None) -> dict:

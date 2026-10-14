@@ -41,6 +41,19 @@ Quindi quando un gruppo che c'era non compare più, **prima di scrivere «non es
 stato dei plugin**: lo stato vero è sul singolo plugin (`…/wp/v2/plugins/<cartella>/<slug>` →
 `network-active`), non sulla lista, che dà il valore per-sito (vedi «Difetti noti del sito» in `SKILL.md`).
 
+**Il namespace è un segnaposto: si risolve, non si dà per scontato.** Nel testo `seo/…` è un nome
+**generico** (vedi `configurazione.md`): sul sito vero quel gruppo si chiama `madweb-seo`, e il nome
+cambia da installazione a installazione. Si scopre con `mcp-adapter-discover-abilities` — una chiamata,
+poi sta in memoria.
+
+**E quando il nome corto esiste in più gruppi, non si indovina.** `get-settings` sta in quattro
+(`madtheme`, `madlinks`, `madweb-seo`, `madleads`): prendere il primo in ordine alfabetico vuol dire
+leggere le impostazioni del plugin dei contatti credendo che siano quelle SEO — e con `update-settings`,
+**scrivere nel plugin sbagliato**. Si preferisce il gruppo che contiene la parola del segnaposto (`seo`
+dentro `madweb-seo`) e, se resta ambiguo, **si lascia fallire la chiamata**: un errore visibile è molto
+meglio di una scrittura nel posto sbagliato. In `scripts/stato-sito.py` è la funzione `_risolvi()`,
+provata su questo sito il 14/10/2026.
+
 ## Abilità Gutenberg (block editor) — 68, dai plugin MCP
 
 Il sito ha attivi tre plugin che espongono il block editor via MCP: **MCP Abilities - Block Editor**

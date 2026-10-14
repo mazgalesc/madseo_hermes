@@ -242,7 +242,7 @@ lo supporta. È quella che fa danno a chi legge.
 
 ## Forma del rapporto
 
-Un file `.md` per bozza, nella **cartella dei rapporti sul Desktop** (non nel repo del progetto) e in una
+Un file `.md` per bozza, nella **cartella dei rapporti**, dentro la cartella di lavoro (non nel repo del progetto) e in una
 cartella separata da quella degli articoli pubblicati, più un indice con il tracker e il bilancio
 trasversale. Struttura che ha funzionato:
 1. intestazione: **verificata il …, lettura integrale a mano, stato «BOZZA (404)»**;

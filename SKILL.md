@@ -123,8 +123,8 @@ hosting, cache, plugin, affiliazione, Gutenberg...). Correzione: aggiungere `'<[
 `$protected` (in coda, dopo il pattern dei link). Quando è corretto, non serve toccare i contenuti.
 
 **3. I difetti di SITO trovati nell'audit dell'11/10/2026 (45 articoli + 15 bozze) — si correggono UNA
-volta, non su 45 pagine.** L'elenco completo con i casi e i numeri è in `~/Desktop/rapporto-difetti-audit.md`
-e in `~/Desktop/correzioni_articoli/00-INDICE.md` (§1-98). Quelli che sono di sito, non di articolo:
+volta, non su 45 pagine.** L'elenco completo con i casi e i numeri è in `~/seo-content/archivio/rapporto-difetti-audit.md`
+e in `~/seo-content/archivio/correzioni_articoli/00-INDICE.md` (§1-98). Quelli che sono di sito, non di articolo:
 
 - **`HowTo` nello schema di molti articoli del lotto di fine settembre** (verificato l'11/10/2026: presente
   in `1952`, `1967`, `204`; **assente** in `1854` e `1883`): funzionalità ritirata da Google nel 2023 (e il
@@ -349,7 +349,7 @@ Lavoro diverso dalla scrittura: si legge, si verifica, si propone — non si toc
 **si legge tutto parola per parola** (i contatori sottostimano); al secondo lettore va **la pagina intera**,
 **mai un estratto né un digest prodotto da uno script**; **ogni accusa si verifica**, la sua e la mia,
 comprese le quantità (lui le gonfia); **nessuna scrittura** senza ok per la singola azione; i rapporti si
-consegnano **dove li vede lui** (cartella sul Desktop, un file `.md` per articolo + `00-INDICE.md`), non
+consegnano **dove li vede lui** (una cartella della cartella di lavoro, un file `.md` per articolo + `00-INDICE.md`), non
 dentro il repo del progetto. **Il riassunto in chat si scrive in Markdown ricco — titoli, elenchi,
 grassetti e tabelle**: Mada comunica quasi sempre da Telegram e vuole le cose «organizzate bene», e in
 Telegram le tabelle si leggono. La preferenza vale per ogni risposta, non solo per i rapporti; le
@@ -392,7 +392,7 @@ Serve a far combaciare i **nomi generici** del testo con la **installazione vera
 Si fa una volta, e si rifà solo quando cambia qualcosa (dominio, percorsi, server).
 
 1. **La cartella di lavoro.** Si sceglie (proposta: `~/seo-content/`) e si crea con `content/`, `audits/`,
-   `distribution/`, `shared/`.
+   `distribution/`, `shared/`, `archivio/`.
 2. **Il database del piano**: `shared/lavoro.db` con la tabella `content_calendar` (schema in
    `references/db-schema.md`).
 3. **Le credenziali — le fa l'autore, mai in chat**: application password di WordPress in un file con
@@ -687,11 +687,11 @@ REST, Maton).
 
 **Versioni precedenti del `SKILL.md`: non dentro l'albero della skill.** Una copia di `SKILL.md`
 dentro la skill crea una skill omonima e **rompe il caricamento per nome** (è successo davvero, fino
-al 01/10/2026: `skill_view` rispondeva *Ambiguous skill name*). L'istantanea sta fuori, in `~/Desktop/seo-content-istantanea/`.
+al 01/10/2026: `skill_view` rispondeva *Ambiguous skill name*). L'istantanea sta fuori, in `~/seo-content/archivio/seo-content-istantanea/`.
 
 **Due copie, e non sono la stessa cosa.** `~/.hermes/skills/productivity/seo-content/` è la copia che
 Hermes carica **ed è quella che il curator di Hermes aggiorna da solo** (la lezione, la prova e il registro
-stanno in `~/.hermes/skills/.curator_ledger.jsonl`); `~/Desktop/seo-content-istantanea/` è un'istantanea che
+stanno in `~/.hermes/skills/.curator_ledger.jsonl`); `~/seo-content/archivio/seo-content-istantanea/` è un'istantanea che
 **non si aggiorna da sola** e invecchia in silenzio. Prima di modificare una regola: **confrontare le due
 copie** (`diff -rq <istantanea> <installata>`) e modificare **l'installata**; poi rigenerare l'istantanea, che
 serve come storico. **Mai copiare l'istantanea sopra l'installata senza riallinearla**, altrimenti si

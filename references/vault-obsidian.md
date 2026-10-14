@@ -122,7 +122,7 @@ la pagina è orfana — è così che si vedono i quattro casi trovati nell'audit
 | cosa dice ogni contenuto, con fonti e date | il **vault** | chi scrive e chi verifica |
 | la promessa, per il confronto anti-duplicato | il **vault** (e copiata nel database) | chi pianifica |
 | le note di ricerca con le fonti | il **vault** (`Ricerca/`) | il giro di ricerca |
-| le correzioni e i rapporti | `~/Desktop/correzioni_articoli/` e `correzioni_bozze/` | l'audit |
+| le correzioni e i rapporti | `~/seo-content/archivio/correzioni_articoli/` e `correzioni_bozze/` | l'audit |
 
 **Prima di dichiarare pronto un articolo**: la sua nota nel vault ha le fonti con le date, i collegamenti
 aggiornati e la lista delle verifiche compilata. Se la nota non è aggiornata, l'articolo non è pronto —

@@ -15,7 +15,7 @@
 | `sito` | nome del server MCP in Hermes e del profilo del browser | `CONFIGURAZIONE.md` |
 | `seo/*` | namespace delle abilità del plugin SEO | `CONFIGURAZIONE.md` |
 | `tema`, `tema-blocks` | nome del tema a blocchi e del suo plugin | `CONFIGURAZIONE.md` |
-| `~/seo-content/` | cartella di lavoro (`content/`, `audits/`, `distribution/`, `shared/`) | `SEO_WORK_DIR` |
+| `~/seo-content/` | cartella di lavoro (`content/`, `audits/`, `distribution/`, `shared/`, `archivio/`) | `SEO_WORK_DIR` |
 | `shared/lavoro.db` | database del piano editoriale | `CONFIGURAZIONE.md` |
 | `wp-credentials.env` | file delle credenziali WordPress (permessi 600) | `WP_CREDENTIALS` |
 | `WP_BASIC_AUTH` | credenziale per l'MCP del sito | `~/.hermes/.env` |

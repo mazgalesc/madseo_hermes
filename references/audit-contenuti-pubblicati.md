@@ -19,8 +19,7 @@ Non si scrive niente (nessuna correzione si applica senza un ok esplicito per qu
 - **Ogni accusa si verifica, in entrambe le direzioni**: le sue (comprese le **quantità**, che tende a
   gonfiare: "ogni sezione", "sei volte") **e le mie** — una cifra non verificata che avevo scritto io
   nel dossier è tornata indietro come "errore strutturale grave".
-- **I rapporti si consegnano dove l'autore li vede**, non dentro il repo del progetto: una cartella sul
-  Desktop, **un file `.md` per articolo** più un `00-INDICE.md` con il tracker (numerazione, data,
+- **I rapporti si consegnano dove l'autore li vede**, non dentro il repo del progetto: una cartella della cartella di lavoro, **un file `.md` per articolo** più un `00-INDICE.md` con il tracker (numerazione, data,
   stato) e i difetti trasversali.
 - Un articolo per volta, in ordine cronologico, e un file di rapporto per ciascuno.
 

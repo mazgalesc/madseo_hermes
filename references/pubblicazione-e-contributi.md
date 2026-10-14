@@ -146,5 +146,5 @@ che le rende semplici. Anche questa è una decisione dell'autore.
 
 Le due copie (installata + istantanea) e il curator restano come descritto in `SKILL.md`: si modifica
 la copia **installata**, poi si rigenera l'istantanea. Se la repo diventa il riferimento pubblico,
-l'istantanea sul Desktop resta comunque il posto delle versioni precedenti — **mai dentro l'albero della
+l'istantanea resta comunque il posto delle versioni precedenti — **mai dentro l'albero della
 skill**, che rompe il caricamento per nome.

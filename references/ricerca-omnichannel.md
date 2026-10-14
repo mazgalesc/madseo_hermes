@@ -18,11 +18,15 @@ fonte né dichiarazione non si scrive.
 ### I canali, in ordine di lavoro
 
 1. suggerimenti Google (query reali in italiano);
+
 2. **SERP vera** con `webcmd` sul profilo `sito` (Google italiano, con date e sponsorizzati) — vedi
    `references/ricerca-webcmd.md`;
 3. `web_search` come seconda opinione sulla SERP, e `web_extract` per leggere le pagine che contano;
+
 4. **Reddit**: `reddit.py` per i feed pubblici, `webcmd` per i thread completi quando serve;
+
 5. **Quora italiano** con `webcmd` (domande e risposte con autore e ruolo);
+
 6. **LinkedIn** e **X** con `webcmd` quando l'argomento è di lavoro o di attualità;
 7. fonti tecniche: WordPress.org API, Stack Exchange (sezione `wordpress`), forum italiano
    (`it.wordpress.org/support/feed/`), GitHub, Hacker News.
@@ -44,19 +48,16 @@ passi non eseguiti.
    accenti escono rotti (`perchÃ¨` al posto di `perché`); la resa è **UTF-8**. Si legge
    `decode("utf-8", "replace")` (ed è quello che `suggest.py` fa già) e, se il testo mostra mojibake, si
    cambia decodifica invece di incolpare Google.
-#### 2. Contesto interno
 
 2. **Contesto interno letto per PROMESSE, non per titoli**: inventario dei contenuti pubblicati, in bozza,
    programmati e cestinati, e per ognuno la promessa (titolo SEO + description + H2 vivi) — l'elenco dei
    titoli non dice cosa promette la pagina. Procedura: `pianificazione-e-duplicati.md`. Le promesse stanno
    in chiaro nel **vault** (`Promesse/`).
-#### 3. SERP e concorrenza
 
 3. SERP: analizza i primi 10 risultati (`web_search`, `web_extract`) e cerca i vuoti da riempire
    ("Skyscraper 3.0"). La SERP **non viene da Google** (i motori sono Brave/Exa/Tavily): per una
    seconda opinione usare la skill **`duckduckgo-search`** (`ddgs text -q "…" -m 10 -r it-it`).
    Se un concorrente blocca, usare la skill `blocked-page-recovery`.
-#### 4. I problemi reali delle persone
 
 4. Problemi reali delle persone, non solo SERP:
    - **Reddit**: skill **`reddit-reading`** (`python3 scripts/reddit.py search "…" --limit 20`,
@@ -82,13 +83,11 @@ passi non eseguiti.
      (serve `curl --globoff`) per sapere cosa usa davvero il mercato, con installazioni e date.
    - **GitHub** (issue dei plugin) e **Hacker News** (`hn.algolia.com/api/v1/search?query=…`).
      Per seguire blog e feed: `web_extract` sull'URL del feed RSS. **Le skill `rss-feeds` e `blogwatcher` non sono installate** su questo Mac (verificato il 21/09/2026): non citarle come se ci fossero.
-#### 5. LinkedIn su Maton
 
 5. LinkedIn: su Maton (OAuth gestito, già collegato) si legge **il proprio profilo e si può
    pubblicare** — `/linkedin/v2/me` funziona, `/linkedin/v2/userinfo` no (scope OpenID assente).
    Contenuti di **altri** non sono leggibili via API: per quelli serve il pannello browser, in
    sola lettura e con l'ok dell'autore. **Non** usare skill che riusano cookie o sessioni del browser.
-#### 6. Output
 
 6. **Output: la nota di ricerca va nel vault** (`Ricerca/`, convenzione in `vault-obsidian.md`), con per
    ogni dato la **fonte con URL** e **la data in cui è stata letta**; una copia in `~/seo-content/audits/`

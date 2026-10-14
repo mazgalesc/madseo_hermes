@@ -100,8 +100,19 @@ le keyword impossibili si scoprono solo dopo averle scritte).
 | **Una richiesta si propone prima di farla** | il credito di prova si esaurisce e **non si ricarica a piccoli importi** (il deposito minimo è alto): si dice quanto costa e cosa dà, e si aspetta l'ok |
 | **Sotto ~400 keyword conviene l'altra strada** (endpoint Labs, a consumo) | il prezzo fisso conviene sulle liste lunghe; sulle corte si paga troppo |
 
-Comandi, endpoint e dettaglio operativo stanno nella skill **`seo-keyword-research`** (`volumes.py`,
-`check_credentials.py`): **qui resta il metodo, là lo strumento.**
+**Quale endpoint risponde a quale domanda.** I nomi servono a chiedere la cosa giusta; i comandi stanno
+nella skill `seo-keyword-research`.
+
+| Domanda | Endpoint |
+|---|---|
+| «quante ricerche al mese ha questa keyword?» (una lista che hai già) | `keywords_data/google_ads/search_volume` |
+| «quanto è difficile?» | `dataforseo_labs/google/bulk_keyword_difficulty` |
+| «che intento ha?» (controprova di quello letto dalla SERP) | `dataforseo_labs/google/search_intent` |
+| «che keyword ci sono intorno a questo tema?» | `dataforseo_labs/google/keyword_ideas`, `related_keywords` |
+
+Comandi, prezzi per esteso e dettaglio operativo stanno nella skill **`seo-keyword-research`**
+(`volumes.py`, `check_credentials.py`, `references/free-keyword-data-sources.md`): **qui resta il metodo,
+là lo strumento.**
 
 ## 4. I cinque passi
 

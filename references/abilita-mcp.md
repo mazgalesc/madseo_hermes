@@ -34,8 +34,12 @@ Per un elenco completo e aggiornato: `https://il-tuo-sito.it/wp-json/wp-abilitie
 (il default è **50 per pagina**: senza `per_page` se ne vedono solo la metà).
 **Attenzione**: il REST elenca meno abilità dell'MCP (87 contro 273 all'11/10/2026) — il REST mostra solo
 quelle esposte pubblicamente. Per l'elenco vero da usare nel lavoro: `mcp-adapter-discover-abilities`.
-**Il numero si legge al momento e non si fissa nel testo**: al 19/09/2026 erano 288 e il gruppo `ai-editor`
-ne aveva 8, all'11/10/2026 quel gruppo non c'è più e il totale è **273**.
+**Il numero si legge al momento e non si fissa nel testo — e non dipende solo dal tempo, dipende dai plugin
+attivi**: il gruppo `ai-editor` (8 abilità) lo porta il plugin dell'editor AI, quindi con esso spento il
+totale è **273** e con esso attivo torna **288** — stesso sito, stesso giorno, verificato il 13/10/2026.
+Quindi quando un gruppo che c'era non compare più, **prima di scrivere «non esiste più» si controlla lo
+stato dei plugin**: lo stato vero è sul singolo plugin (`…/wp/v2/plugins/<cartella>/<slug>` →
+`network-active`), non sulla lista, che dà il valore per-sito (vedi «Difetti noti del sito» in `SKILL.md`).
 
 ## Abilità Gutenberg (block editor) — 68, dai plugin MCP
 

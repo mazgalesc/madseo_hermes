@@ -66,6 +66,22 @@ l'endpoint MCP col valore reale di `WP_BASIC_AUTH` risponde **405** (credenziali
 sbagliato per l'handshake), non `401`. Quindi **prima di dichiarare bloccata una rotta si ripete la prova
 con le credenziali rilette da un parser**, chiedendosi se quel `401` viene dal sito o dal valore troncato.
 
+### Note di esercizio (verificate il 12/10/2026)
+
+- **Il database può risultare «locked»** se una chiamata interrotta lascia aperta una connessione: l'errore
+  è `database is locked` e non c'entra il sito né il file. Si chiudono le connessioni rimaste aperte (o si
+  riparte con un processo nuovo) e si riprova. **Non si cancellano file per sbloccarlo**: uno script che
+  cancella file chiede un consenso che può non arrivare, e il lock non si risolve così.
+- **I valori in uso**: `status` = `Scheduled` (voce da scrivere), `Draft` (scritta, caricata come bozza su
+  WordPress), `Published`. `funnel_stage` = `TOFU` | `MOFU` | `BOFU` — il database **rifiuta** altro: un
+  valore fuori lista fa fallire l'intero inserimento con `CHECK constraint failed`. Il funnel si **deriva
+  dall'`intento`**, non si sceglie a parte.
+- **Ogni voce del piano porta la sua data**: due articoli a settimana, **martedì e venerdì**, con la
+  rotazione per categoria (WordPress → Affiliazione → Guide AI → Strumenti AI). Le date sono **slot**: se il
+  materiale non è pronto slittano, e si aggiornano nel database (il calendario leggibile le stampa).
+- **I contenuti gi\u00e0 pubblicati non stanno qui**: stanno in `INVENTARIO.md`. La tabella tiene la **coda**
+  (voci da scrivere/rifare) e le **bozze** gi\u00e0 scritte.
+
 ### Required Agent Operations
 
 #### 1. Inserting New Ideas (Via `plan_strategy`)

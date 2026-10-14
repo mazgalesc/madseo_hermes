@@ -130,8 +130,11 @@ const out = await page.evaluate(() => {
 });
 try { print(JSON.stringify(out, null, 1)); } catch (e) { console.log(JSON.stringify(out, null, 1)); }
 ```
-Il risultato arriva in `logs[0].args[0]` **come stringa JSON** (va riletta con `json.loads`), non in
-`result` (che è `null`). Il blocco `try/catch` serve: `print` non è sempre definito, `console.log` sì.
+Il risultato arriva **in `result`** quando il programma **fa `return`** di una stringa, e in
+`logs[0].args[0]` quando usa `print`/`console.log`: **si leggono tutti e due**, non si dà per scontato che
+`result` sia vuoto — entrambe le forme sono state osservate funzionare. Se il programma fa `return`, il
+valore è una **stringa JSON** da rileggere con `json.loads`. Il blocco `try/catch` serve quando si usa
+`print`: non è sempre definito, `console.log` sì.
 
 ### Cosa si ricava da una SERP e cosa no
 
@@ -142,6 +145,15 @@ Il risultato arriva in `logs[0].args[0]` **come stringa JSON** (va riletta con `
   concorrenza, non solo fonte di domande;
 - **blocco sponsorizzato** («Spostato»/`Risultato Sponsorizzato`): dice chi paga su quella query —
   segnale di valore commerciale;
+- **le pastiglie di raffinamento sotto la barra di ricerca** («Word gratis», «WhatsApp», «iPhone», «Lavoro»,
+  «Online»…): sono la coda lunga **vera** di quella query, scritta con le parole del pubblico e non dedotta
+  dai suggerimenti. Si leggono insieme ai risultati e finiscono dritte nel passo delle keyword;
+- **la forma dei primi dieci decide se l'articolo può posizionarsi** (regola in `parole-chiave.md` §2: il
+  contenuto deve avere la stessa forma di chi sta in prima pagina). Qui serve solo il **come si legge**: si
+  guardano i titoli e i domini — titoli «gratis/online/illimitato/App» con domini di servizi e assistenza =
+  intento transazionale, e una guida «come si fa» non si posiziona; titoli «come/guida/confronto» = intento
+  informativo o commerciale, e l'articolo ha spazio. È il controllo che evita di scrivere un pezzo per una
+  query che nessun articolo vincerà mai;
 - **La SERP dei motori di `web_search` NON è la prima pagina di Google** (verificato il 24/09/2026, articolo 207): per la stessa query in italiano `web_search` restituisce guide in inglese (smartwp, kinsta, hostinger, wpbeginner), mentre la SERP vera di Google è **in italiano** e porta in prima pagina due thread Reddit e uno sponsorizzato locale. Non dedurre mai «la SERP è tutta in inglese» da `web_search`: per i passi 4 e 5 vale **solo** la SERP letta con webcmd, `web_search` resta la seconda opinione.
 - **Per Reddit la search di webcmd non serve**: su query WordPress restituisce rumore (thread di sport e cronaca). Per Reddit usare `reddit.py` sui feed pubblici, come da skill.
 - **`Le persone chiedono` NON è estraibile con i selettori vecchi** (`div[jsname="yEVEwb"]`,

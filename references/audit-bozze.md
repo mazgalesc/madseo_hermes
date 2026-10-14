@@ -1,7 +1,8 @@
 # Verifica di una **bozza** non pubblicata (audit delle bozze)
 
 Lavoro diverso sia dalla scrittura sia dall'audit dei pubblicati. Si legge, si verifica, si propone:
-**nessuna modifica alla bozza**, nessuna scrittura, solo rapporti.
+**nessuna modifica alla bozza**, nessuna scrittura, solo rapporti. **La correzione è una fase separata**,
+che si apre solo quando l'autore la chiede: procedura in fondo a questo file.
 
 ## Cosa cambia rispetto agli articoli pubblicati
 
@@ -112,7 +113,7 @@ Nel rapporto le accuse respinte si scrivono **come respinte**: evita che il lett
 
 ## I difetti che ricorrono in tutte le bozze
 
-Cinque schemi, da cercare per primi perché si correggono una volta e valgono per tutte:
+Sei schemi, da cercare per primi perché si correggono una volta e valgono per tutte:
 1. **Chi promette replicabilità non dà gli strumenti**: dice «in un comando» e il comando non c'è; non
    nomina i modelli, i servizi o i plugin provati. Senza quelli la prova non è replicabile — ed è il
 difetto più facile da correggere e quello che vale di più.
@@ -125,11 +126,119 @@ difetto più facile da correggere e quello che vale di più.
 4. **Numeri vecchi o presi dalla fonte sbagliata**: conteggi fatti su un numero di articoli superato,
    soglie attribuite al posto di quelle giuste (controllare la soglia sulla pagina che la pubblica).
 5. **Campi SEO da sistemare**: estratto vuoto o di un altro articolo, titolo oltre 60, description a 160.
+6. **La promessa di metodo non mantenuta**: l'articolo si presenta come il più aggiornato o il più
+trasparente («quello che non ho potuto verificare l'ho scritto») e poi dà per fatti numeri, date e
+comportamenti che non ha verificato. Ogni volta che una bozza dichiara un metodo — nomina i modelli, dà il
+comando, dichiara i limiti — si controlla che lo mantenga **in tutto il corpo**: i dati non verificati si
+dichiarano come tali, non si coprono con una frase di stile. Su un contenuto che insegna a fidarsi delle
+fonti è il difetto che pesa più di tutti, ed è anche il più facile da chiudere (due righe di dichiarazione).
 
 **Il difetto tecnico più grave da cercare**: le istruzioni che **non funzionano** per chi legge. Esempio
 verificato: mandare a riparare le tabelle da phpMyAdmin quando le tabelle di WordPress sono **InnoDB**, e
 `REPAIR TABLE` copre solo MyISAM, Aria, Archive e CSV. Ogni istruzione va controllata contro il motore, la
 versione e lo strumento che il lettore ha davvero — non contro l'idea generale.
+
+## Applicare le correzioni (fase separata, su richiesta dell'autore)
+
+La verifica **non tocca niente**: produce rapporti. La **correzione** è un lavoro diverso, che si fa quando
+l'autore lo chiede, e ha regole sue. Vale la regola generale delle scritture: si resta in **`draft`**, mai
+pubblicare. **L'ok dell'autore copre le modifiche di quel giro su quelle bozze** — contenuto, campi, titolo
+SEO — e vale per tutte quando dice di procedere senza fermarsi; **non copre il cambio di stato**, che resta
+una decisione sua.
+
+**Procedura provata**, una bozza per volta nell'ordine del calendario:
+1. **Si legge solo il «Piano di correzione»** del rapporto (più la riga «Da non toccare»), non tutto il
+   rapporto da 8-9 KB: le correzioni sono elencate lì, con priorità e tipo. Se un punto cita un dato che non
+   ho (il link di una fonte, il titolo di un caso), si cerca **quel** dato — non si inventa e non si salta.
+2. **Si prende il contenuto grezzo**: `curl -u "$WP_USER:$WP_APP_PASSWORD" -s "…/wp/v2/posts/<id>?context=edit"`
+   e si legge `content.raw` (**non** `content.rendered`: l'HTML dei blocchi si modifica solo sul grezzo).
+3. **Sostituzioni mirate** sull'HTML dei blocchi, una per correzione, **verificando che ognuna sia stata
+   trovata** (un `if a not in nuovo: print("❌")` per ogni sostituzione). **Una sostituzione non trovata è un
+   errore bloccante: si risolve prima di riscrivere**, mai spedire il contenuto con una correzione applicata a
+   metà — le altre passano e quella no, e il difetto resta in pagina mentre il rapporto dice «corretta». Due
+   regole che rendono l'aggancio affidabile:
+   - **L'aggancio si prende dal testo grezzo, mai dal testo pulito.** Il testo letto senza tag non esiste nel
+     contenuto: dentro celle di tabella, voci di elenco, grassetti e link le frasi sono **spezzate dai tag**,
+     quindi una frase che si legge intera in pagina non si trova intera nell'HTML. Prima di scrivere la
+     sostituzione si stampa la **finestra di grezzo** attorno al punto
+     (`repr(raw[max(0,m.start()-300):m.end()+300])`) e si copia da lì.
+   - **Prima di sostituire una frase, controllare se è anche un titolo.** `re.findall(r'<h2[^>]*>(.*?)</h2>', raw)`
+     dà l'elenco delle sezioni. Il testo di un `<h2>` è una stringa come le altre: un aggancio troppo generico
+     lo sostituisce e **la sezione si perde** (ne resta il corpo, senza titolo). Dopo la scrittura **l'elenco
+     dei titoli si ricontrolla** insieme al contenuto, ed è il controllo che accorge di un capitolo smontato.
+   Se la stringa non combacia ancora (spazi, `\n` fra i commenti di blocco, entità HTML) si isola un frammento
+   più corto e più vicino al tag, mai si prosegue «a occhio».
+4. **Si riscrive passando solo i campi cambiati** — `{"content": …, "excerpt": …}` — con il corpo JSON
+   scritto **su file con `json.dumps`** e inviato con `--data-binary @file`: inline si rompe su apostrofi e
+   virgolette.
+5. **Si rilegge dal sito** e si verifica **ogni singola modifica**: una riga di esito per correzione
+   (c'è la frase nuova, non c'è più quella vecchia) più `status == "draft"`.
+6. **Un numero cambiato cambia in tutti i posti in cui vive.** Un conteggio sta nel corpo, nella tabella,
+   nel riquadro di sintesi **e** nelle risposte frequenti: aggiornarne uno solo lascia il resto incoerente.
+   La prova d'accettazione è la **ricerca del valore vecchio** nel contenuto grezzo riletto: finché compare,
+   la correzione non è finita. E quando il numero viene rimisurato, nel testo entrano **il metodo e la data**
+   (es. «contati nell'HTML salvato, solo link in uscita, 45 articoli»): metodi diversi danno numeri diversi, e
+   senza la dichiarazione il lettore non può rifare il conto.
+   Vive anche **fuori dall'articolo**, in tre posti che si dimenticano: il **titolo**, che esiste **due
+   volte** — quello del post e quello SEO dell'abilità `update-post-seo` — e correggerne solo uno lascia
+   sbagliato proprio quello che si vede in SERP; la **description SEO**, che ripete spesso lo stesso numero
+   (si corregge dall'abilità `update-post-seo`, non dal contenuto); e le **frasi-riassunto che ricalcolano una
+   riga**.
+   Correggere una riga di tabella obbliga a rifare anche il totale che la riassume: altrimenti resta
+   l'incoerenza fra il dettaglio giusto e la sintesi sbagliata, che è il punto da cui parte la sfiducia.
+
+7. **Alla fine del giro, un controllo unico su tutte le bozze toccate**: si leggono insieme
+   (`…/wp/v2/posts?include=<id,id,…>&status=draft&context=edit&_fields=id,status,title,modified`) e si
+   verifica che siano **tutte in `draft`** e tutte toccate. Dimostra in una riga che il giro non ha
+   pubblicato niente per sbaglio, e con quindici bozze è il solo controllo che si legge davvero.
+
+**Nel rapporto la correzione si segna.** A lavoro fatto si aggiunge in testa al rapporto, subito sotto il
+titolo, una riga `> **✅ CORRETTA — <data>.**` con l'elenco in sintesi di cosa è stato applicato e di cosa
+resta (le voci editoriali, i punti che aspettano una risposta dell'autore). Due motivi: l'indice delle bozze
+dice a colpo d'occhio quante ne restano e quali, e il giro successivo sa cosa è già stato fatto senza
+rileggere il rapporto intero. È una richiesta esplicita dell'autore, non un abbellimento.
+
+**Due trappole di markup, verificate.** Aggiungere una frase dentro un grassetto o un link già aperto produce
+markup annidato (`<strong>… <strong>…</strong> …</strong>`): si chiude il tag prima, o si scrive fuori. E se la
+correzione tocca **titolo o description SEO**, si passa dall'abilità `update-post-seo` **dopo aver letto lo
+schema con `get-ability-info`**: i campi si chiamano `title` e `description` (non `seo_title`) e `post_id` è
+obbligatorio — indovinare il nome del campo fa fallire la chiamata senza spiegare perché.
+
+**Le voci editoriali restano una passata a parte.** Ridurre le ripetizioni, uniformare il registro, spostare
+un paragrafo: non sono sostituzioni. Se in quel giro non si fanno, si **dichiarano come non fatte** nel
+riepilogo (e restano scritte nel rapporto, così il giro dopo sa da dove ripartire).
+
+**La passata sulle ripetizioni, come si fa davvero.** Confrontare le frasi una per una (somiglianza fra
+stringhe) **non trova le ripetizioni di questo sito**: sono concettuali, dette con parole diverse, e quel
+controllo torna vuoto. Quello che funziona è contare i **gruppi di parole ripetuti** (5-grammi, su testo
+normalizzato: minuscole, niente punteggiatura) e guardare dove ricadono. Il verdetto, su otto bozze:
+- **Il riquadro → corpo → FAQ → sintesi che ripete i concetti-chiave è il formato del sito, non un difetto.**
+  Appiattirlo peggiora l'articolo. Si tocca solo la **ripetizione verbatim** (la stessa frase identica
+  quattro-cinque volte): si varia in due punti e si lasciano i blocchi di servizio.
+- **Le ricorrenze di un termine tecnico non sono ripetizioni.** Se il gruppo ripetuto è il nome di una cosa
+  che l'articolo spiega (i parametri di un comando, «tempo al primo byte», «script e fogli di stile»),
+  cambiarlo toglie chiarezza: si lascia così.
+- **`alt` e didascalie restano**, anche quando ripetono il testo: descrivono l'immagine e servono a chi
+  legge con uno screen reader. Il taglio, se serve, si fa nel corpo.
+- **Tre occorrenze con tre ruoli diversi** (apertura, sezione dedicata, chiusura) sono il filo dell'articolo:
+  restano.
+Nel rapporto la passata si annota con la sua riga (`> **Ripetizioni — verificate il …**`) con l'esito **e il
+motivo**, anche quando l'esito è «nessuna da ridurre»: è la riga che impedisce al giro dopo di rifare il
+lavoro o, peggio, di appiattire il formato credendolo un difetto.
+
+**Due regole che vengono dall'autore:**
+- **Le immagini della bozza restano quelle che ci sono.** Non si rigenerano, non si sostituiscono, non si
+  propongono alternative (l'autore non ha credito per generarne di nuove): se una correzione riguarda
+  un'immagine, si dichiara e si aspetta.
+- **Un caso non verificabile si toglie, non si aggiusta.** In un articolo che insegna a verificare le fonti,
+  un esempio senza titolo, autore o link è il primo da rimuovere — e citare l'articolo stesso come motivo
+  funziona meglio di qualunque spiegazione. Vale identicamente per un **numero**: se la pagina ufficiale che
+  dovrebbe pubblicarlo si apre e non lo contiene (verificato **aprendola**, non ricordandola), il dato si
+  **toglie**; lasciarlo senza fonte o appoggiarlo a una fonte qualsiasi sono lo stesso errore.
+
+**Si corregge per prima l'istruzione pericolosa**, anche se è «solo» una frase: rimuovere una filigrana
+(vietato dai termini d'uso), cancellare un file senza spegnere il log, un comando usato su un motore che non
+lo supporta. È quella che fa danno a chi legge.
 
 ## Forma del rapporto
 
@@ -147,5 +256,6 @@ trasversale. Struttura che ha funzionato:
    omissione, rigore, editoriale);
 8. **Da non toccare**: l'elenco esplicito, così chi corregge non smonta quello che funziona.
 
-**In chat: righe puntate, nessuna tabella.** Le tabelle stanno nel file; la sintesi serve a decidere cosa
-aprire.
+**In chat vale la regola generale di Mada: Markdown ricco, tabelle comprese** (comunica da Telegram, dove
+si leggono). Le tabelle del rapporto stanno anche nel file `.md`; la sintesi in chat serve a decidere cosa
+aprire, non a sostituire il rapporto.

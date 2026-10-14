@@ -27,6 +27,21 @@ cp ~/.webcmd/cloak/profiles/sito/Default/Cookies "$TMPDIR/c.db" && sqlite3 "$TMP
 #  altrimenti tools/list risponde «Invalid Request: MCP-Protocol-Version header is required»)
 ```
 
+### Leggere i file delle credenziali
+
+I file delle credenziali (`~/.hermes/.env`, `~/.hermes/secrets/*.env`) contengono **valori con spazi e
+caratteri speciali** e non sono pensati per essere letti dalla shell: `set -a; . file` **tronca il valore
+al primo spazio** (`letto="${MATON_API_KEY:0:12}"` sembra una verifica, è un campione mutilato). Una
+verifica fatta così dà risposte sbagliate in entrambe le direzioni: un controllo di sicurezza ha
+«trovato» chiavi in chiaro che non esistevano, e per poco non ne dichiarava assenti di vere.
+
+- Si leggono con un **parser** (una riga = `CHIAVE=valore`, si tolgono le virgolette) e i valori si passano
+  ai comandi **come argomenti** (`-u "$UTENTE:$PASSWORD"`), non esportati dalla shell.
+- Nei controlli e nei rapporti i valori **non si stampano mai**: si mostra il nome della variabile e basta.
+- Cercando un segreto dentro un altro archivio (memoria, skill, documenti) si confrontano i **frammenti
+  lunghi** del valore letto dal parser: un URL, un percorso o il nome di un modello che compaiono in un
+  testo **non sono segreti** e non vanno segnalati come tali.
+
 | Componente | A cosa serve | Da dove viene | Com'è su questo Mac |
 |---|---|---|---|
 | **MCP `sito`** | tutte le abilità del sito: SEO (26), Gutenberg (68), contenuti, media, menu, utenti — **273 in tutto** (11/10/2026) | il sito stesso: `https://il-tuo-sito.it/wp-json/mcp/mcp-adapter-default-server` | configurato in `~/.hermes/config.yaml` (`mcp_servers.sito`), autenticazione Basic con `WP_BASIC_AUTH`; espone **3 strumenti** (scopri / leggi / esegui) — le abilità si chiamano *attraverso* quelli |

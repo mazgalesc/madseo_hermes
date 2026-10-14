@@ -36,6 +36,22 @@ confermarlo: un aggiornamento senza `status` può cambiarlo.
 - Tutto il resto è **sola lettura** e si può fare liberamente.
 - Prima di qualunque scrittura: dire esattamente cosa cambia, su quale contenuto, e con quale payload.
 
+## ⛔ Attivare o spegnere un plugin è una scrittura in produzione
+
+Vale la regola generale (ok esplicito dell'autore **per quella singola azione**), più tre cautele che su un
+sito vivo non si saltano:
+
+- **Uno alla volta**, mai in blocco: se il sito si rompe, si sa quale plugin l'ha rotto.
+- **Controllo di salute dopo ogni attivazione**: la home **più un articolo pubblicato vero**, con un
+  parametro di cache-busting nell'URL. Una home che risponde 200 non basta: un plugin può rompere solo il
+  singolo contenuto, o solo la resa.
+- **Se il sito non risponde, si ripristina subito** lo stato precedente (`status` invertito) e si riferisce
+  l'esito. Il ripristino è una scrittura come le altre, ma è l'unica che si esegue **senza aspettare**: è la
+  rete di sicurezza di un guasto che si sta causando. Poi si indaga, non si insiste.
+
+**Il numero di abilità MCP segue lo stato dei plugin**, quindi dopo un'attivazione si rimisura (non si
+assume). Un plugin spento non toglie solo le sue abilità: può togliere un intero gruppo da quelle esposte.
+
 ## Configurazione: nomi generici, valori reali fuori dalla repo
 
 Il testo usa **nomi generici** (`il-tuo-sito.it`, `sito`, `seo/*`, `tema`, `~/seo-content/`): valgono per
@@ -74,7 +90,7 @@ esempio e vanno adattati prima di usare la skill.
 
 ## Difetti noti del sito (verificati, da non riscoprire)
 
-**1. `missing_alt` — corretto in `plugin-seo` 3.0.31 (19/09/2026); l'11/10/2026 la versione attiva è la 3.0.34** — si legge con `curl -u … 'https://il-tuo-sito.it/wp-json/wp/v2/plugins?context=edit'`, che dà nome, `version` e `status` (il tema a blocchi è nella stessa risposta).
+**1. `missing_alt` — corretto in `plugin-seo` 3.0.31 (19/09/2026); l'11/10/2026 la versione attiva è la 3.0.34** — si legge con `curl -u … 'https://il-tuo-sito.it/wp-json/wp/v2/plugins?context=edit'`, che dà nome e `version` (il tema a blocchi è nella stessa risposta) — **ma non fidarsi del suo `status`**: quella lista riporta lo stato **per-sito**, quindi su un multisite un plugin attivo a livello di **rete** lì compare `inactive`. Lo stato vero è sul singolo plugin, `…/wp/v2/plugins/<cartella>/<slug>` → `network-active`, ed è quello che si legge. **Mai dichiarare «disattivato per sbaglio» guardando solo la lista** (verificato il 13/10/2026: tre plugin riferiti come spenti erano attivi a livello di rete, e su quella lettura sbagliata è stato programmato un intervento inutile).
 Il controllo era
 `preg_match('/<img[^>]+(?!alt=)[^>]*>/i', …)`: il lookahead negativo viene valutato dopo che `[^>]+`
 ha già consumato il tag, quindi combaciava con **qualsiasi** `<img>` — 31 contenuti segnalati a
@@ -144,7 +160,7 @@ e in `~/Desktop/correzioni_articoli/00-INDICE.md` (§1-98). Quelli che sono di s
 |---|---|
 | SEO on-site: titolo, meta, schema, redirect, 404, link interni, analisi | **abilità `seo` via MCP** (26 abilità) |
 | Search Console e Analytics | **Maton** (gateway HTTP, `Authorization: Bearer $MATON_API_KEY`) |
-| Ricerca: le query che la gente digita | **suggerimenti Google**: `suggestqueries.google.com/complete/search?client=chrome&hl=it&gl=it&q=…`, decodifica **UTF-8** (il `latin-1` scritto prima del 29/09/2026 rompeva gli accenti: `perchÃ¨`) |
+| Ricerca: le query che la gente digita | **suggerimenti Google**: `suggestqueries.google.com/complete/search?client=chrome&hl=it&gl=it&q=…` — **decodifica tollerante**: la risposta non è sempre UTF-8 valido (un byte come `0xe9` fa fallire la decodifica rigida), quindi si prova UTF-8 e si ripiega su `latin-1`/`errors="replace"`; sennò gli accenti diventano `perchÃ¨` o la chiamata si interrompe |
 | Ricerca: SERP e pagine | `web_search` / `web_extract` + skill **`duckduckgo-search`** (`ddgs text -q "…" -m 10 -r it-it`); se una pagina blocca, skill `blocked-page-recovery` |
 | Ricerca: Reddit | skill **`reddit-reading`** (`scripts/reddit.py search|sub|thread|user|doctor`) — feed pubblici, 1 richiesta al minuto, nessuna credenziale |
 | Ricerca: siti che richiedono l'accesso (Reddit completo, LinkedIn, X, Quora, SERP Google) | **`webcmd`** col profilo `sito` — configurazione e accessi in `references/ambiente-setup-maton.md`. Sola lettura, poche pagine per volta |
@@ -356,6 +372,15 @@ da quella degli articoli pubblicati. Procedura, comandi per verificare citazioni
 ricorrono in tutte le bozze e la forma del rapporto: **`references/audit-bozze.md`** — più i controlli
 incrociati di **`references/controlli-verifica.md`**, che valgono anche su una bozza.
 
+**Applicare le correzioni è un lavoro a parte, con la sua procedura**: si legge il **«piano di
+correzione»** del rapporto (non tutto il rapporto), si prendono le modifiche una per una sull'HTML dei
+blocchi, si riscrive con lo **stesso `status`** e si rilegge dal sito controllando **ogni singola
+modifica**. **Gli agganci si prendono dal testo grezzo, non dal testo pulito, e una sostituzione non
+trovata blocca la scrittura**: è l'errore che lascia in pagina il difetto che il rapporto dà per
+corretto. Dettaglio, payload, trappole e controllo finale del giro: **`references/audit-bozze.md`**,
+sezione «Applicare le correzioni». **Le immagini della bozza restano quelle che ci sono**: non si rigenerano se non lo chiede
+l'autore.
+
 ## Le 13 procedure
 
 **La procedura 0 si fa una volta sola, al primo avvio: senza, tutte le altre chiedono cose che non esistono.**
@@ -377,6 +402,10 @@ Si fa una volta, e si rifà solo quando cambia qualcosa (dominio, percorsi, serv
    `hermes config set mcp_servers '{sito: {url: "https://<dominio>/wp-json/mcp/mcp-adapter-default-server", headers: {Authorization: "${WP_BASIC_AUTH}"}}}'`
    — l'header dipende dal server: **si prova `Authorization` e poi `Auth`** e si tiene quello che risponde.
    Caso vero: **con `Auth` il sito risponde 401, con `Authorization` 200** — l'header giusto è quello che risponde, non quello che sembra giusto. Un **405** significa credenziali accettate e metodo sbagliato per l'handshake.
+   Se lo si prova **a mano con curl** (cosa che gli script non fanno): dopo l'`initialize` servono la notifica
+   `notifications/initialized` e, su ogni richiesta successiva, l'header **`MCP-Protocol-Version: 2025-06-18`**,
+   altrimenti `tools/list` risponde «Invalid Request: MCP-Protocol-Version header is required». **Il modo
+   giusto resta lo strumento di Hermes** (`mcp-adapter-*`), non curl.
 5. **Il vault delle note**: percorso in `OBSIDIAN_VAULT_PATH` (`~/.hermes/.env`); cartelle e convenzioni
    in `references/vault-obsidian.md`.
 6. **Le variabili degli script** in `~/.hermes/.env`: `SEO_WORK_DIR`, `SITE_DOMAIN`, `SITE_MCP_URL`,
@@ -425,28 +454,24 @@ I canali, cosa si cerca in ciascuno, cosa si scrive nel rapporto → **`referenc
    automatico dava «nessun conflitto» mentre l'articolo 223 aveva in pagina la stessa promessa) e la
    mappa del cluster sono in **`references/pianificazione-e-duplicati.md`**.
 
-**Stato del calendario — letto dal database il 01/10/2026** (comando:
-`sqlite3 ~/seo-content/shared/lavoro.db "select status, count(*) from content_calendar group by status;"`):
+**Cosa contiene il database, e cosa no.** `content_calendar` contiene **le voci della coda** (`Scheduled`)
+e **le bozze già scritte** (`Draft`), con `keyword_primaria`, `intento`, `funnel_stage`, `promessa` e
+`scheduled_date`. **I pubblicati non stanno qui**: stanno in `~/seo-content/shared/INVENTARIO.md`,
+rigenerabile dal sito (REST + `seo/get-post-seo`), ed è quello che si consulta per il controllo
+anti-duplicato. Comando per lo stato: `sqlite3 ~/seo-content/shared/lavoro.db "select status, count(*)
+from content_calendar group by status;"`; versione leggibile: `~/seo-content/shared/CALENDARIO.md`
+(si rigenera con `scripts/calendario.py`, non si modifica a mano).
 
-| `status` | righe |
-|---|---|
-| `Published` | **37** |
-| `Draft` | **30** |
+**I numeri scritti qui invecchiano: quello che non invecchia è il comando.** Rileggerli, non ricordarli.
+Le categorie in rotazione sono quattro (WordPress → Affiliazione → Guide AI → Strumenti AI), e il
+`funnel_stage` è **derivato** dall'`intento` (informativo→TOFU, problem solving/commerciale→MOFU,
+transazionale→BOFU), mai scelto a parte.
 
-**Zero righe `Scheduled` e zero `Idea`**: le 80 righe programmate il 29/09 sono state lavorate. Le
-categorie in rotazione sono 4 (WordPress → Affiliazione → Guide AI → Strumenti AI). La colonna
-`funnel_stage` è **derivata** dalla colonna «intenzione» del piano (informativo→TOFU, problem
-solving/commerciale→MOFU, transazionale→BOFU), non è una scelta a parte. Versione leggibile:
-`~/seo-content/shared/CALENDARIO.md` (si rigenera con lo script, non si modifica a mano).
-
-**I numeri scritti qui invecchiano a ogni articolo: quello che non invecchia è il comando.** Rileggerli,
-non ricordarli.
-
-**Com'è arrivato qui (storico, per non riscoprirlo):** la coda operativa è il **piano del 23/09/2026**
-(`~/seo-content/audits/PIANO-ARTICOLI-2026-09-23.md`, 80 titoli = 20 per ciascuna delle 4 categorie attive),
-caricato con **80 righe `Scheduled` in ordine di rotazione** (1 per categoria per ciclo), **senza date**
-(l'ordine lo decide la disponibilità del materiale). Le **25 righe del calendario del 19/09 sono state
-cancellate** su ordine dell'autore (backup `lavoro.db.bak-20260929-115248`).
+**Le date sono slot, non impegni.** Il ritmo concordato è **due articoli a settimana, martedì e venerdì**:
+si assegnano in ordine di rotazione, partendo dai lavori già pronti (prima i **refresh** dei contenuti che
+Search Console mostra già vicini, poi le bozze, poi le voci da scrivere) e slittano se il materiale non è
+pronto. Il piano del giro vive in `audits/` con la data nel nome (es. `PIANO-ARTICOLI-<AAAA-MM-GG>.md`):
+**si cita il più recente, non un nome fisso** — i piani vecchi non sono più su questa macchina.
 
 Riferimenti: `references/roadmap-strategy.md`, `references/funnel-strategy.md`,
 `references/parole-chiave.md` (come si sceglie la keyword di ogni riga).

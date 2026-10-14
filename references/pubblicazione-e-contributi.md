@@ -75,6 +75,11 @@ d'ambiente, prova finale), più il modello del file di configurazione locale. Ch
 configurare e chi l'ha scritta non lascia valori nel repository: senza questa procedura i segnaposto
 restano senza corrispondenza e la skill chiede cose che non esistono.
 
+12. **Descrizione e argomenti della repo si impostano e si rileggono.** Sono la vetrina di una repo
+    pubblica: `gh repo edit <owner>/<repo> --description "…" --add-topic <t> …`, poi si conferma con
+    `gh api repos/<owner>/<repo> --jq '{descrizione: .description, argomenti: .topics}'`. Si verificano
+    dall'API, non dalla memoria di averli scritti; gli argomenti si scelgono in minuscolo, con i trattini.
+
 ## 2-bis. La storia della repo: un albero pulito non è una storia pulita
 
 Le sostituzioni ripuliscono **l'ultima versione**: le versioni precedenti restano nella storia, e chi clona
@@ -120,6 +125,10 @@ che le rende semplici. Anche questa è una decisione dell'autore.
 - Prima di committare: `git status --short`, il `diff --stat`, e la scansione del §1.
 - **Le cancellazioni di file si dichiarano nel messaggio**: una `D` non spiegata sembra un errore.
 - Un commit per unità di lavoro coerente. Il commit si fa **solo con l'ok dell'autore per quella singola azione**.
+- **Quando l'autore vuole la storia a un commit solo**, anche le modifiche successive si accorpano invece di
+  aggiungere commit: `git reset --soft <radice>` + `git commit --amend --no-edit` + `git push --force`, e la
+  prova che non si è perso niente è **l'hash dell'albero invariato** (`git rev-parse HEAD^{tree}`). Chiedere
+  prima se preferisce la storia pulita o i commit di lavoro: una volta detto, vale per tutte le volte dopo.
 - La cartella della skill è una repo git a sé: non ha un remote finché non lo si crea, e la creazione
   (pubblica o privata) è una decisione sua.
 

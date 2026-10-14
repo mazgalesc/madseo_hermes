@@ -5,7 +5,7 @@ version: 2.1.0
 metadata:
   hermes:
     tags: [SEO, GEO, WordPress, content, immagini, italiano]
-    related_skills: [scrapling, mnemosyne-memory-override]
+    related_skills: [scrapling, mnemosyne-memory-override, seo-keyword-research]
 prerequisites:
   commands: [curl, npm, webcmd]
 ---
@@ -160,6 +160,8 @@ e in `~/seo-content/archivio/correzioni_articoli/00-INDICE.md` (§1-98). Quelli 
 |---|---|
 | SEO on-site: titolo, meta, schema, redirect, 404, link interni, analisi | **abilità `seo` via MCP** (26 abilità) |
 | Search Console e Analytics | **Maton** (gateway HTTP, `Authorization: Bearer $MATON_API_KEY`) |
+| **Volumi, difficoltà (KD), CPC, intento** — **opzionale** | skill **`seo-keyword-research`** + `DATAFORSEO_LOGIN` nel file di ambiente. Senza, il metodo resta completo: `references/parole-chiave.md` §3 |
+| **Impression Bing** — opzionale, gratuito | `BING_WEBMASTER_API_KEY` + `bing.py` della skill `seo-keyword-research` |
 | Ricerca: le query che la gente digita | **suggerimenti Google**: `suggestqueries.google.com/complete/search?client=chrome&hl=it&gl=it&q=…` — **decodifica tollerante**: la risposta non è sempre UTF-8 valido (un byte come `0xe9` fa fallire la decodifica rigida), quindi si prova UTF-8 e si ripiega su `latin-1`/`errors="replace"`; sennò gli accenti diventano `perchÃ¨` o la chiamata si interrompe |
 | Ricerca: SERP e pagine | `web_search` / `web_extract` + skill **`duckduckgo-search`** (`ddgs text -q "…" -m 10 -r it-it`); se una pagina blocca, skill `blocked-page-recovery` |
 | Ricerca: Reddit | skill **`reddit-reading`** (`scripts/reddit.py search|sub|thread|user|doctor`) — feed pubblici, 1 richiesta al minuto, nessuna credenziale |

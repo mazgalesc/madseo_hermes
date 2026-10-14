@@ -8,6 +8,10 @@ Search Console e Analytics via Maton.
 Stampa per ogni voce: OK, DA FARE, ASSENTE o SALTATO — e un riepilogo. Quello che manca **si dichiara**,
 non blocca il resto: immagini, Scrapling e `ddgs` sono opzionali.
 
+Le **fonti a pagamento o facoltative** (DataForSEO per volumi e difficoltà, Bing Webmaster per le
+impression) si provano **solo se la chiave c'è** e si segnano `SALTATO` quando mancano: sono un
+miglioramento, non un requisito, e il metodo resta completo senza (`references/parole-chiave.md` §3).
+
 Uso:  python3 verifica-avvio.py [--dominio il-tuo-sito.it] [--silenzioso]
 
 I valori veri si leggono dall'ambiente (SEO_WORK_DIR, SITE_DOMAIN, SITE_MCP_URL, WP_CREDENTIALS,
@@ -18,7 +22,6 @@ import argparse
 import json
 import os
 import pathlib
-import re
 import subprocess
 
 HOME = pathlib.Path.home()
@@ -73,6 +76,19 @@ def per_suffisso(segreti: dict, suffisso: str) -> str:
         if k.upper().endswith(suffisso):
             return v
     return ""
+
+
+def voci_credenziali() -> list[str]:
+    """I soli nomi delle voci del file di credenziali WordPress.
+
+    `valori_locali()` unisce anche il file di ambiente, quindi filtrando per suffisso finivano nella
+    riga «Credenziali WordPress» chiavi che WordPress non c'entra: qui si legge **solo** quel file.
+    """
+    try:
+        return sorted(riga.split("=", 1)[0].strip() for riga in CRED.read_text().splitlines()
+                      if "=" in riga and not riga.lstrip().startswith("#"))
+    except OSError:
+        return []
 
 
 def basic(segreti: dict) -> str:
@@ -133,7 +149,7 @@ def main() -> None:
         segna("Credenziali WordPress", "ASSENTE", f"manca {CRED} — le consegna l'autore, fuori chat")
     else:
         modo = oct(CRED.stat().st_mode & 0o777)[-3:]
-        nomi = sorted(k for k in segreti if re.match(r".*(USER|PASSWORD|APP_PASSWORD)$", k))
+        nomi = voci_credenziali()
         segna("Credenziali WordPress", "OK" if modo == "600" else "DA FARE",
               f"permessi {modo}" + ("" if modo == "600" else " (devono essere 600)") +
               f" · voci presenti: {', '.join(nomi) if nomi else 'nessuna'}")
@@ -203,7 +219,25 @@ def main() -> None:
     segna("Proprietà Analytics", "OK" if GA4 else "SALTATO",
           f"GA4_PROPERTY_ID {'impostata' if GA4 else 'non impostata: il report Analytics non è disponibile'}")
 
-    # 8. riepilogo
+    # 8. fonti facoltative: si PROVANO solo se la chiave c'è, e non entrano fra le cose «da sistemare»
+    facoltative = (
+        ("DataForSEO — volumi, KD (facoltativa)", segreti.get("DATAFORSEO_LOGIN"),
+         ["-u", f"{segreti.get('DATAFORSEO_LOGIN', '')}:{segreti.get('DATAFORSEO_PASSWORD', '')}",
+          "https://api.dataforseo.com/v3/appendix/user_data"]),
+        ("Bing Webmaster — impression (facoltativa)", segreti.get("BING_WEBMASTER_API_KEY"),
+         ["https://ssl.bing.com/webmaster/api.svc/json/GetKeywordStats"
+          f"?q=wordpress&country=it&language=it-IT&apikey={segreti.get('BING_WEBMASTER_API_KEY', '')}"]),
+    )
+    for voce, chiave, richiesta in facoltative:
+        if not chiave:
+            segna(voce, "SALTATO", "non configurata: è un di più, il metodo resta completo senza "
+                                    "(parole-chiave.md §3)")
+        else:
+            codice, _ = curl(temp, richiesta)
+            segna(voce, "OK" if codice == 200 else "DA FARE",
+                  "risponde" if codice == 200 else f"chiave presente ma la prova risponde {codice or 'nulla'}")
+
+    # 9. riepilogo
     if not args.silenzioso:
         larghezza = max(len(v) for v, _, _ in esiti)
         for voce, esito, nota in esiti:

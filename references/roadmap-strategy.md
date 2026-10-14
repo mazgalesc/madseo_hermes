@@ -2,15 +2,14 @@
 
 This reference governs the autonomous generation of long-term SEO growth plans. It uses a phased approach to build authority and displace competitors, integrated with WordPress category taxonomies.
 
-## 1. Come si calcola la priorità (riscritto il 01/10/2026)
+## 1. Come si calcola la priorità
 
-**La formula che stava qui** — `Priority Score = (Monthly Search Volume + Business Value [1-10]) /
-Keyword Difficulty` — **non si applica**, e non perché sia sbagliata in teoria: perché su questa
-macchina **volume mensile e difficoltà non esistono**. Verificato il 01/10/2026: le connessioni attive
-sono tre (`google-analytics-admin`, `google-analytics-data`, `google-search-console`), nessun Google
-Ads, nessun Semrush/Ahrefs. Una formula che chiede quei due dati produce **numeri inventati**.
+**La formula completa** — `Priority Score = (Volume mensile + Valore di business [1-10]) / Difficoltà` —
+chiede volume e difficoltà, che **non arrivano dal livello gratuito**: si ottengono solo dal livello a
+pagamento **opzionale** descritto in `parole-chiave.md` §3. Quindi la priorità si calcola **a due
+velocità**, e la seconda non è «meglio» della prima: è la prima con due numeri in più.
 
-**Quello che si usa al suo posto, in due passaggi:**
+**Senza volume e senza difficoltà** — il caso normale, e va benissimo così:
 
 1. **La domanda già misurata (Search Console).** Per ogni candidata si legge quello che esiste già:
    **impression** (quanta domanda intercettiamo), **posizione media** (quanto siamo vicini), **clic e
@@ -26,6 +25,19 @@ Ads, nessun Semrush/Ahrefs. Una formula che chiede quei due dati produce **numer
 - **Costruzione**: nessuna impression (domanda nuova per il sito), valore alto → si lavora **dopo**,
   perché prima serve autorità sull'argomento.
 - **Da non fare**: valore dichiarato 0-2, oppure intento **navigazionale** → non entra in piano.
+
+**Con volume e difficoltà disponibili** (skill `seo-keyword-research` e `DATAFORSEO_LOGIN` nel file di
+ambiente) ai due passaggi se ne aggiungono tre, e cambia il peso delle decisioni:
+
+- **volume = filtro, non obiettivo.** Circa il 95% delle keyword sta sotto le 10 ricerche al mese: la
+  coda lunga è quella che converte, e shortlistare per volume la butta via.
+- **difficoltà = cancello d'ingresso.** Scarta in partenza ciò che non si può vincere, invece di
+  scoprirlo dopo aver scritto l'articolo.
+- **intento dichiarato = controprova** di quello letto dalla SERP, non un sostituto.
+
+La formula si applica **solo alle candidate già filtrate per intento**: un punteggio alto su una keyword
+con l'intento sbagliato resta un articolo che non porta nessuno. E i crediti si usano con le regole di
+`parole-chiave.md` §3 — sandbox prima, lista intera in una richiesta, mai la coda `live`.
 
 - **Topical Clusters**: Grouping keywords into silos to boost authority. *(resta valido: è la ragione
   per cui si costruiscono prima i temi vicini e poi quelli larghi.)*

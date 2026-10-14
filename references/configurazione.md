@@ -32,6 +32,9 @@
 | `SITE_MCP_URL` | endpoint MCP del sito | ripiega su un indirizzo di esempio |
 | `WP_CREDENTIALS` | file delle credenziali WordPress | ripiega su `~/.hermes/secrets/wp-credentials.env` |
 | `GA4_PROPERTY_ID` | proprietà Analytics | **obbligatoria** per il report Analytics |
+| `DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD` | volume, difficoltà (KD), CPC, intento — **a consumo** | **opzionali**: senza, il metodo resta completo ma senza quei numeri (`parole-chiave.md` §3) |
+| `BING_WEBMASTER_API_KEY` | impression settimanali sul mercato Bing | **opzionale**, gratuito |
+| `PARALLEL_API_KEY` | ricerca web approfondita con citazioni | **opzionale**, a consumo |
 | `OBSIDIAN_VAULT_PATH` | vault delle note | la skill `obsidian` cerca in `~/Documents/Obsidian Vault` |
 
 ## Regola

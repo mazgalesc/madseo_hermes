@@ -42,35 +42,66 @@ informativo; se sono confronti e recensioni è commerciale; se sono pagine prodo
 - Lo stesso controllo si fa con `seo/detect-search-intent` (lettura, via MCP): serve come
   controprova, **non** come sostituto della lettura della SERP.
 
-## 3. Cosa possiamo misurare e cosa no (verificato il 01/10/2026)
+## 3. Cosa possiamo misurare — due livelli: gratis (sempre) e a pagamento (opzionale)
 
-Questa è la tabella che evita di scrivere numeri inventati. Riverificato con
-`GET https://api.maton.ai/connections` → **HTTP 200, 3 connessioni attive**:
-`google-analytics-admin`, `google-analytics-data`, `google-search-console`. **Nessun Google Ads,
-nessun Semrush/Ahrefs/DataForSEO.**
+Questa sezione evita di scrivere numeri inventati. Si legge in **due livelli**, e **il primo basta**:
+il secondo aggiunge dati, non cambia il metodo.
+
+### Il livello gratuito — c'è sempre, e il metodo è completo così
+
+Verificato con `GET https://api.maton.ai/connections` → **HTTP 200, 3 connessioni attive**:
+`google-analytics-admin`, `google-analytics-data`, `google-search-console`.
 
 | Dato | Ce l'abbiamo? | Da dove |
 |---|---|---|
 | Query che portano già impression e clic | **sì** | Search Console via Maton (chiamate in `ambiente-setup-maton.md`) |
 | Posizione media e pagine che le intercettano | **sì** | Search Console |
 | CTR reale di una query | **sì** | Search Console (clic ÷ impression) |
-| Volume di ricerca mensile | **no** | non esiste una fonte collegata a questa macchina |
-| Difficoltà della keyword (KD) | **no** | idem |
-| CPC / valore commerciale | **no** | idem |
+| Impression sul mercato Bing | **sì, se la chiave c'è** | Bing Webmaster Tools (`bing.py` della skill `seo-keyword-research`) |
 | Esistenza e forma della domanda | **sì** | i suggerimenti Google, la SERP vera, Reddit, Quora, i forum |
-| Andamento nel tempo | **parziale** | confronto fra due finestre di Search Console; Google Trends non è collegato |
+| Quanto un argomento viene letto | **sì** | Pageviews di Wikipedia (`wikipedia.py`) |
+| Andamento nel tempo | **parziale** | confronto fra due finestre di Search Console |
+| Volume mensile · difficoltà (KD) · CPC | **no** | servono il livello a pagamento, qui sotto |
 
-**Conseguenza che vale come regola: nessun numero di volume, difficoltà o CPC entra in un piano
-editoriale, in un rapporto o in un articolo.** Se serve quel dato, la strada è aggiungere una
-connessione (Google Ads su Maton, oppure uno strumento a pagamento) **e dirlo all'autore**, non stimarlo.
-
-Quello che al posto del volume si usa — ed è più utile per questo sito:
+**Senza il livello a pagamento il metodo non cambia: cambia solo cosa si può misurare.** Quello che al
+posto del volume funziona bene — ed è già la prassi di questa skill:
 
 1. **il numero di suggerimenti** che Google restituisce per un seme: molti suggerimenti = domanda vera;
 2. **le query che già ci portano impression** (Search Console): sono domanda reale **e** già a portata;
 3. **le domande che si ripetono** su Reddit, Quora e nei forum di settore: sono le parole di chi cerca;
 4. **il buon senso sulla nicchia**: un blog su WordPress per principianti non deve posizionarsi su
    «hosting» (troppo largo), deve posizionarsi su «quanto costa un hosting WordPress» (è la domanda).
+
+### Il livello a pagamento — **opzionale**, e quando c'è si dichiara
+
+Con la skill sorella **`seo-keyword-research`** installata e `DATAFORSEO_LOGIN` nel file di ambiente si
+sbloccano **volume di ricerca esatto, CPC, competizione, difficoltà (KD) e intento dichiarato** per le
+keyword che si indicano. È lo stesso dato che vendono i tool SEO, pagato a richiesta invece che in
+abbonamento.
+
+**Nessuno è obbligato a installarlo, e questa skill funziona senza.** Se manca, si scrive «volumi non
+disponibili» e si prosegue con il livello gratuito: è quello che si è fatto fino a oggi. Se c'è, ogni
+numero che entra in un piano, in un rapporto o in un articolo porta accanto **la fonte e la data**.
+**Un numero senza fonte resta un numero inventato — gratis o a pagamento che sia.**
+
+**Cosa cambia davvero, in una riga:** si smette di scegliere la keyword per intuito e si sceglie su un
+numero verificabile — e si sa **quanto è difficile**, che è il dato che manca di più (senza la difficoltà,
+le keyword impossibili si scoprono solo dopo averle scritte).
+
+**Le regole che evitano di sprecare i crediti** — sono poche e non si saltano:
+
+| Regola | Perché |
+|---|---|
+| **Il sandbox prima di tutto** — ogni endpoint ha un gemello gratuito su `sandbox.dataforseo.com`: stessa richiesta, stessi permessi, **valori finti e costo 0** | si collauda la pipeline senza pagare; si paga una volta sola, sui dati veri |
+| **Solo coda `standard`, mai `live`** | $0,06 contro $0,09 per lo stesso dato |
+| **Una richiesta porta fino a 1.000 keyword**: si aspetta di avere la lista **intera** e si manda una volta sola | 1 keyword costa quanto 1.000 — mandare liste corte è lo spreco più comune |
+| **Saldo prima e dopo** (`GET /v3/appendix/user_data`) | in coda standard il campo `cost` della risposta è **0**: l'addebito si vede solo dal saldo |
+| **Mai pagare per scoprire se una chiave funziona** | la prova delle credenziali è gratuita (`check_credentials.py`) |
+| **Una richiesta si propone prima di farla** | il credito di prova si esaurisce e **non si ricarica a piccoli importi** (il deposito minimo è alto): si dice quanto costa e cosa dà, e si aspetta l'ok |
+| **Sotto ~400 keyword conviene l'altra strada** (endpoint Labs, a consumo) | il prezzo fisso conviene sulle liste lunghe; sulle corte si paga troppo |
+
+Comandi, endpoint e dettaglio operativo stanno nella skill **`seo-keyword-research`** (`volumes.py`,
+`check_credentials.py`): **qui resta il metodo, là lo strumento.**
 
 ## 4. I cinque passi
 

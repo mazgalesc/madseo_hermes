@@ -54,6 +54,27 @@ for i, r in enumerate(conn.execute("""SELECT funnel_stage, wp_category_id, title
                                       WHERE status='Scheduled' ORDER BY scheduled_date, id"""), start=1):
     righe.append(f"| {r['scheduled_date'] or '—'} | {r['funnel_stage']} | {CAT.get(r['wp_category_id'], '?')} | {r['title']} |")
 
+# --- coda di manutenzione: le pagine da rivedere (refresh_at) ---
+righe += ["", "## Coda di manutenzione (`refresh_at`)", "",
+          "**Le pagine da rivedere**: la data dice *quando* vanno riguardate (§3-bis del `SKILL.md`).",
+          "Chi è in ritardo sta in cima, e gli esiti possibili sono tre — aggiornare, consolidare, togliere —",
+          "con i criteri scritti in `references/regole-di-controllo.md`. **La manutenzione propone, non esegue.**", "",
+          "| Da rivedere il | Giorni | Categoria | Voce |", "|---|---|---|---|"]
+import datetime as _dt
+
+_oggi = _dt.date.today()
+for r in conn.execute("""SELECT funnel_stage, wp_category_id, title, refresh_at
+                           FROM content_calendar
+                          WHERE refresh_at IS NOT NULL AND refresh_at != ''
+                          ORDER BY refresh_at, id"""):
+    try:
+        _giorni = (_dt.date.fromisoformat(r["refresh_at"]) - _oggi).days
+        quando = f"{_giorni:+d}" + (" · in ritardo" if _giorni < 0 else "")
+    except ValueError:
+        # La data va scritta ISO come `scheduled_date`: un formato ambiguo (12/10/2026) non si interpreta.
+        quando = "formato non ISO — da correggere"
+    righe.append(f"| {r['refresh_at']} | {quando} | {CAT.get(r['wp_category_id'], '?')} | {r['title']} |")
+
 # --- altre bozze (famiglia vecchia, senza voce di piano) ---
 altre = [r for r in conn.execute("""SELECT wp_post_id, wp_category_id, article_title, title
                                     FROM content_calendar
@@ -66,9 +87,12 @@ if altre:
 
 
 n_pub = conn.execute("SELECT COUNT(*) FROM content_calendar WHERE status='Published'").fetchone()[0]
-righe += ["", f"## Articoli pubblicati ({n_pub})", "",
-          "Qui ci sono solo le voci della **coda** (da scrivere) e le **bozze** già scritte: i contenuti",
-          "già pubblicati stanno in `INVENTARIO.md`, rigenerato dal sito.", "",
+righe += ["", "## Articoli pubblicati",
+          "",
+          "**Non stanno in questo file, e il numero non si legge da qui**: i contenuti già pubblicati sono nel",
+          "sito, e l'elenco con le promesse sta in `INVENTARIO.md`, **rigenerato dal sito** con",
+          "`scripts/inventario.py` (`X-WP-Total`). La tabella `content_calendar` tiene solo la coda e le bozze,",
+          f"quindi il conteggio delle righe `Published` qui dentro è **{n_pub}** e non dice quanti articoli ha il sito.", "",
           "## Controllo duplicati", "",
           "**Regola attiva**: prima di proporre o scrivere un titolo si confronta la **promessa** — non il",
           "titolo — con i pubblicati, le bozze e la coda. L'inventario è in `INVENTARIO.md`; il metodo in",

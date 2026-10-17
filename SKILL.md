@@ -5,7 +5,7 @@ version: 2.1.0
 metadata:
   hermes:
     tags: [SEO, GEO, WordPress, content, immagini, italiano]
-    related_skills: [scrapling, mnemosyne-memory-override, seo-keyword-research]
+    related_skills: [scrapling, mnemosyne-memory-override]
 prerequisites:
   commands: [curl, npm, webcmd]
 ---
@@ -52,6 +52,19 @@ sito vivo non si saltano:
 **Il numero di abilità MCP segue lo stato dei plugin**, quindi dopo un'attivazione si rimisura (non si
 assume). Un plugin spento non toglie solo le sue abilità: può togliere un intero gruppo da quelle esposte.
 
+## ⛔ Prima di proporre un cambio di configurazione, guardare cosa c'è già
+
+**Quando un passo non riesce, la prima cosa da controllare è se lo strumento giusto esiste già, installato e
+configurato** — e il passo si riscrive nominando **quello**. Prescrivere un cambio alla macchina o alla
+configurazione di Hermes (un default di sistema, un flag, un'installazione), o chiedere all'autore di
+decidere, fa diventare un lavoro suo una cosa che è già risolta: lui conosce il suo computer meglio di me, e
+chiederà a cosa serviva lo strumento che c'era.
+
+Il caso concreto, che vale come regola: **per i siti che bloccano l'automazione il browser è `webcmd` col
+profilo che ha dentro gli accessi** — non `browser_exec` (i motori AI lo murano tutti) e non un «browser
+predefinito» da impostare sul sistema. `webcmd doctor` dice se e quale pezzo manca; la configurazione non si
+tocca. Nel verso opposto: **quello che manca davvero si dichiara e si chiede**, e non si inventa un ripiego.
+
 ## Configurazione: nomi generici, valori reali fuori dalla repo
 
 Il testo usa **nomi generici** (`il-tuo-sito.it`, `sito`, `seo/*`, `tema`, `~/seo-content/`): valgono per
@@ -65,9 +78,17 @@ esempio e vanno adattati prima di usare la skill.
 | Script | Cosa fa | Quando |
 |---|---|---|
 | `verifica-avvio.py` | il controllo d'avvio: cartella, database, credenziali (presenza e permessi, mai i valori), vault, MCP con entrambi gli header, sito, REST, Maton, Analytics | **procedura 0**, e ogni volta che qualcosa smette di funzionare |
+| `gsc.py` | Search Console via Maton: query reali, pagine, impression, clic, CTR, posizione | il primo passo di ogni ricerca e di ogni pianificazione |
+| `suggest.py` | l'espansione senza account: autocompletamento Google + Bing | per allargare i semi in italiano |
+| `bing.py` | impression settimanali dal mercato Bing (`GetKeywordStats`, gratuito) | confronto e tendenza — **mai come volume** |
+| `wikipedia.py` | quante persone leggono la voce di un tema (Pageviews Wikimedia) | per ordinare i temi quando nessun'altra fonte gratuita c'è |
+| `volumes.py` | **l'unico passo a pagamento**: volume reale, CPC, competizione, difficoltà | solo sulla shortlist **completa**, e la spesa si propone prima |
+| `check_credentials.py` | prova **gratis** che Maton, DataForSEO e Bing rispondano (presenza e lunghezza, mai i valori) | prima di ogni ricerca, e dopo ogni rotazione di chiave |
+| `check_urls.py` | verifica che una URL citata **esista**: stato HTTP **e** esistenza in WordPress | prima di chiamare una riga di Search Console «una pagina» |
 | `controlla-articolo.py` | i controlli incrociati su un articolo o una bozza: numeri annunciati, aritmetica, artefatti, alt, link, ripetizioni | prima di consegnare una lettura |
 | `stato-sito.py` | stato del sito in un colpo: SEO via MCP, query di Search Console, pagine di Analytics | quando serve il quadro d'insieme |
-| `calendario.py` | genera `CALENDARIO.md` dal piano editoriale | dopo ogni modifica al database del piano |
+| `inventario.py` | **rigenera `shared/INVENTARIO.md`** leggendo il sito: i quattro elenchi (pubblicati, bozze, programmati, cestinati) più le pagine, con titolo SEO, promessa e parola chiave, e i totali da `X-WP-Total` | **prima di ogni confronto anti-duplicato**, non una volta per stagione |
+| `calendario.py` | genera `CALENDARIO.md` dal piano editoriale: coda, bozze, e la **coda di manutenzione** (`refresh_at`) | dopo ogni modifica al database del piano |
 | `genera-immagine.py`, `genera-infografica.py` | copertine e infografiche con la chiave immagini (**opzionale**) | solo se la chiave c'è; altrimenti si dichiara e si fa a mano |
 
 ## Dove stanno le cose
@@ -85,7 +106,7 @@ esempio e vanno adattati prima di usare la skill.
 ## Mappa dei file — dove sta cosa
 
 **L'elenco completo dei file di `references/`, con il peso e lo stato di ognuno, è in
-`references/indice-file.md`** (35 file). Qui resta la regola: se cerchi una regola e non è in questo file,
+`references/indice-file.md`** (36 file). Qui resta la regola: se cerchi una regola e non è in questo file,
 è in uno di quelli; il metodo sta qui, i cataloghi stanno nei reference.
 
 ## Difetti noti del sito (verificati, da non riscoprire)
@@ -160,9 +181,9 @@ e in `~/seo-content/archivio/correzioni_articoli/00-INDICE.md` (§1-98). Quelli 
 |---|---|
 | SEO on-site: titolo, meta, schema, redirect, 404, link interni, analisi | **abilità `seo` via MCP** (26 abilità) |
 | Search Console e Analytics | **Maton** (gateway HTTP, `Authorization: Bearer $MATON_API_KEY`) |
-| **Volumi, difficoltà (KD), CPC, intento** — **opzionale** | skill **`seo-keyword-research`** + `DATAFORSEO_LOGIN` nel file di ambiente. Senza, il metodo resta completo: `references/parole-chiave.md` §3 |
-| **Impression Bing** — opzionale, gratuito | `BING_WEBMASTER_API_KEY` + `bing.py` della skill `seo-keyword-research` |
-| Ricerca: le query che la gente digita | **`suggest.py`** della skill `seo-keyword-research` (Google + Bing, senza chiavi): gestisce da sé la trappola dell'endpoint, cioè la **decodifica** — la risposta non è sempre UTF-8 valido e la lettura rigida si interrompe o rende gli accenti storti. A mano: `suggestqueries.google.com/complete/search?client=chrome&hl=it&gl=it&q=…` |
+| **Volumi, difficoltà (KD), CPC, intento** — **opzionale** | `DATAFORSEO_LOGIN` nel file di ambiente + **`scripts/volumes.py`**. Senza, il metodo resta completo: `references/parole-chiave.md` §3 |
+| **Impression Bing** — opzionale, gratuito | `BING_WEBMASTER_API_KEY` + **`scripts/bing.py`** |
+| Ricerca: le query che la gente digita | **`scripts/suggest.py`** (Google + Bing, senza chiavi): gestisce da sé la trappola dell'endpoint, cioè la **decodifica** — la risposta non è sempre UTF-8 valido e la lettura rigida si interrompe o rende gli accenti storti. A mano: `suggestqueries.google.com/complete/search?client=chrome&hl=it&gl=it&q=…` |
 | Ricerca: SERP e pagine | `web_search` / `web_extract` + skill **`duckduckgo-search`** (`ddgs text -q "…" -m 10 -r it-it`); se una pagina blocca, skill `blocked-page-recovery` |
 | Ricerca: Reddit | skill **`reddit-reading`** (`scripts/reddit.py search|sub|thread|user|doctor`) — feed pubblici, 1 richiesta al minuto, nessuna credenziale |
 | Ricerca: siti che richiedono l'accesso (Reddit completo, LinkedIn, X, Quora, SERP Google) | **`webcmd`** col profilo `sito` — configurazione e accessi in `references/ambiente-setup-maton.md`. Sola lettura, poche pagine per volta |
@@ -216,6 +237,20 @@ entità le fa sembrare assenti.
 un quarto passo che nel testo non esiste; 212 ha i 5 passi che corrispondono uno a uno all'elenco visibile.
 Le abilità di lettura del plugin **non sempre dicono la verità**: la verifica vera è l'HTML pubblico.
 
+**E le abilità di SCRITTURA non dicono cosa hanno fatto.** Una scrittura risponde `{"success": true}`
+anche quando ha **ignorato in silenzio** un campo che non conosce: la busta del successo non è la prova che
+il campo è stato scritto. Verificato il 14/10/2026 — `seo/update-post-seo` chiamato con un `focus_keyword` in
+più ha risposto `success: true` elencando in `updated` **solo** titolo e descrizione, e la keyword è rimasta
+vuota. Su un controllo che la §4 dichiara **bloccante** (la keyword), l'esito era «superato» senza esserlo.
+Quindi: **dopo ogni scrittura si rilegge il campo che si voleva cambiare**, e se è immutato la scrittura non
+è avvenuta.
+
+**Prima di comporre un payload, si chiedono i campi veri dell'abilità** con
+`mcp-adapter-get-ability-info`. `mcp-adapter-discover-abilities` elenca nome, etichetta e descrizione, e per
+un certo numero di voci **non porta affatto** lo schema dei parametri: «il campo non compare nell'elenco» non
+vuol dire «il campo non esiste», e «la chiamata è riuscita» non vuol dire «il campo è stato scritto». Le due
+domande si fanno all'endpoint, non alla memoria.
+
 - **`missing_meta` vuole titolo *e* description**: il controllo (`seo-abilities.php`) segnala il
   problema se manca anche **solo** `_sito_seo_title`. Scrivere solo la description non fa
   scendere il conteggio.
@@ -247,8 +282,9 @@ Le abilità di lettura del plugin **non sempre dicono la verità**: la verifica 
 ## Schema: quale scegliere, articolo per articolo
 
 **Decidere lo schema fa parte della scrittura dell'articolo, non è un passaggio a parte.** Si imposta
-con `seo/update-schema-data` (campi: `schema_type`, `faq`, `howto`, `video`, `product`,
-`job`, `event`, `course`, `recipe`, `speakable`, `breadcrumb_label`).
+con `seo/update-schema-data`, che ha **14 campi** (i nomi veri, come li restituisce
+`mcp-adapter-get-ability-info`): `post_id`, `schema_type`, `speakable`, `faq`, `howto`, `video`,
+`product`, `job`, `event`, `course`, `recipe`, `robots`, `canonical_override`, `breadcrumb_label`.
 
 Valori ammessi per `schema_type`: `''` (usa il default del sito), `Article`, `BlogPosting`,
 `NewsArticle`, `TechArticle`, `ScholarlyArticle`, `Report`, `WebPage`, `Product`, `JobPosting`,
@@ -260,12 +296,13 @@ risposte, lo HowTo per una procedura numerata passo passo.
 
 | Tipo di articolo | `schema_type` | Blocchi aggiuntivi |
 |---|---|---|
-| Guida o approfondimento (default del sito) | `Article` | — |
+| Articolo di blog o guida (il caso normale) | `BlogPosting` | — |
+| Pagina lunga di approfondimento che non è un post di blog | `Article` | — |
 | Guida molto tecnica, per chi già conosce l'argomento | `TechArticle` | — |
-| Articolo con sezione domande e risposte | `Article` | **FAQ** (una voce per domanda) |
-| Procedura passo passo ("come installare…", "come migrare…") | `Article` | **HowTo** (con i passi reali) |
-| Confronto o recensione di uno strumento/prodotto | `Article` | `product` se riguarda un prodotto specifico |
-| Contenuto con video incorporato | `Article` | **video** |
+| Articolo con sezione domande e risposte | `BlogPosting` | **FAQ** (una voce per domanda) |
+| Procedura passo passo ("come installare…", "come migrare…") | `BlogPosting` | **HowTo** (con i passi reali) |
+| Confronto o recensione di uno strumento/prodotto | `BlogPosting` | `product` se riguarda un prodotto specifico |
+| Contenuto con video incorporato | `BlogPosting` | **video** |
 | Pagina di servizio (contatti, documentazione) | `WebPage` | — |
 
 **Aggiornamento 2026 — FAQ e HowTo non danno più risultati arricchiti (verificato il 19/09/2026):**
@@ -280,10 +317,18 @@ Chi vuole un risultato visibile investe su Article, Product e recensioni, Event,
 Breadcrumb, Video: quelli ci sono ancora.
 
 **Regole pratiche**
-- il tipo di default del sito è `Article`: non serve impostarlo se l'articolo è una guida normale
+- **gli articoli di questo sito sono `BlogPosting`**: è il sottotipo di `Article` previsto per un post di
+  blog, ed è quello che il sito usa — verificato il 17/10/2026 su **10 articoli su 10** (pubblicati e bozze).
+  Il valore `''` lascia il default del sito: si scrive `BlogPosting`, e **si rilegge** per confermarlo
 - **se l'articolo contiene una FAQ, lo schema FAQ va messo** (verificarlo sul contenuto o con
   `seo/get-schema-data`, non sulla pagina resa di una bozza)
 - lo schema deve **descrivere quello che si vede**: niente FAQ o HowTo su contenuti che non li hanno
+- **nei blocchi `howto` i campi che non servono si lasciano fuori, non si riempiono con un default.** Un
+  HowTo salvato senza dire niente sui costi resta con **`cost_currency: "USD"`**: verificato il 17/10/2026, gli
+  articoli **1441** e **1479** hanno il blocco con `total_time: ""`, `estimated_cost: ""` e
+  **`cost_currency: "USD"`**, mentre il **224** — dove i campi sono stati riempiti — è in **`EUR`**
+  (`total_time: "PT4H"`). Quindi il dollaro è il default che resta quando non si sceglie niente. Se il
+  contenuto non parla di costi, i campi di costo non si mandano; e dopo la scrittura si rilegge il blocco
 - i breadcrumb sono disattivati sul sito e Local Business non è configurato: non impostarli per ora
 - dopo la scrittura, **rileggere** con `seo/get-schema-data` per confermare
 
@@ -399,7 +444,9 @@ Si fa una volta, e si rifà solo quando cambia qualcosa (dominio, percorsi, serv
    `references/db-schema.md`).
 3. **Le credenziali — le fa l'autore, mai in chat**: application password di WordPress in un file con
    permessi 600 (`~/.hermes/secrets/wp-credentials.env`) e la credenziale per l'MCP del sito in
-   `~/.hermes/.env`.
+   `~/.hermes/.env`. Il file è un **`.env`, non uno script**: si legge riga per riga (`CHIAVE=valore`),
+   **non si fa `source`** — un valore con spazi interrompe la shell e i comandi che seguono partono con la
+   credenziale vuota, che si presenta come un 401/403 dell'API invece che come un errore di shell.
 4. **Il server MCP in Hermes**:
    `hermes config set mcp_servers '{sito: {url: "https://<dominio>/wp-json/mcp/mcp-adapter-default-server", headers: {Authorization: "${WP_BASIC_AUTH}"}}}'`
    — l'header dipende dal server: **si prova `Authorization` e poi `Auth`** e si tiene quello che risponde.
@@ -417,6 +464,11 @@ Si fa una volta, e si rifà solo quando cambia qualcosa (dominio, percorsi, serv
 8. **La prova**: il controllo dell'ambiente in `references/ambiente-setup-maton.md` deve dire OK su MCP,
    REST, Search Console e Analytics. Quello che manca si **dichiara** — immagini, Scrapling e `ddgs` sono
    **opzionali** e hanno il loro ripiego.
+9. **I dati delle parole chiave**: si prova **gratis** che le chiavi rispondano
+   (`scripts/check_credentials.py`) e si prepara **il primo set** — Search Console, poi i semi, poi i
+   suggerimenti, poi il volume dove c'è (`references/parole-chiave-strumenti.md`) — scritto in
+   `shared/keywords/` con il suo indice. Le keyword scelte entrano nel piano: senza questo passo il piano
+   si costruisce a intuito.
 
 **Dettaglio passo per passo, con i comandi e il controllo finale**: `references/primo-avvio.md`.
 
@@ -464,6 +516,11 @@ anti-duplicato. Comando per lo stato: `sqlite3 ~/seo-content/shared/lavoro.db "s
 from content_calendar group by status;"`; versione leggibile: `~/seo-content/shared/CALENDARIO.md`
 (si rigenera con `scripts/calendario.py`, non si modifica a mano).
 
+**Lo stato di una riga è una dichiarazione, non il fatto.** Il database dice cosa credevamo quando la riga
+è stata scritta: una voce data per `Draft` può essere **già pubblica**, e una `Scheduled` può essere già
+scritta. Prima di fidarsi della coda (controllo duplicati, «cosa resta da scrivere») si interroga il sito
+riga per riga: il comando, i due esiti e i conteggi veri stanno in `references/pianificazione-e-duplicati.md` §2.
+
 **I numeri scritti qui invecchiano: quello che non invecchia è il comando.** Rileggerli, non ricordarli.
 Le categorie in rotazione sono quattro (WordPress → Affiliazione → Guide AI → Strumenti AI), e il
 `funnel_stage` è **derivato** dall'`intento` (informativo→TOFU, problem solving/commerciale→MOFU,
@@ -501,13 +558,26 @@ da solo:** una pagina con zero visite **non compare in Google Analytics**, quind
 con un crawler o guardando le pagine a traffico bassissimo — non fidandosi del report.
 
 **La manutenzione propone, non esegue**: nessuna cancellazione, disindizzazione o fusione senza un
-**ordine esplicito dell'autore e un elenco nominato di contenuti** (regola in `references/regole-di-controllo.md`).
+**ordine esplicito dell'autore e un elenco nominato di contenuti**. **I tre esiti e i loro criteri stanno
+anche in `references/regole-di-controllo.md`** — è quel file che si legge prima di decidere, e senza di
+esso gli esiti vivono solo in questa pagina.
 Prima di toccare una pagina si salva il contenuto in `~/seo-content/audits/backup-articoli/` (procedura in §8).
+
+**Quando l'ordine arriva, l'esecuzione è reversibile e lascia la traccia.** Quattro passi: (1) copia del
+database prima di toccarlo — `cp ~/seo-content/shared/lavoro.db ~/seo-content/shared/lavoro.db.bak-<AAAA-MM-GG-HHMMSS>`;
+(2) la modifica sulla riga (`sqlite3 … "DELETE FROM content_calendar WHERE id=<id>;"` per l'esito *Togliere*);
+(3) `CALENDARIO.md` si **rigenera** con `scripts/calendario.py` — è un file derivato, non si modifica a mano —
+e si ricontrolla il conteggio (`select status, count(*) from content_calendar group by status;`); (4) la riga
+tolta si **copia per intero** dove resta leggibile (l'elenco dei difetti, o il verbale della decisione),
+insieme a chi l'ha decisa e perché. Cancellare una riga dal database è comodo; la decisione che l'ha
+giustificata è quello che serve sei mesi dopo — e un `copre_gia` compilato con l'id del contenuto che copriva
+la promessa è la traccia minima quando la riga resta in tabella.
 
 **La coda di manutenzione adesso ha una colonna:** dal 01/10/2026 `content_calendar` ha `refresh_at`
 (per le pubblicate = data di pubblicazione + 3 mesi), più `keyword_primaria` e `intento`. Colonne e
 stato del riempimento: `references/db-schema.md`. **Le righe senza `refresh_at` sono quelle mai
-pubblicate**: non vanno inventate.
+pubblicate**: non vanno inventate. La coda si vede in `CALENDARIO.md`, che `scripts/calendario.py`
+rigenera — con i giorni che mancano a ogni voce e quelle in ritardo in cima.
 
 ### 4. Bozza articolo (`draft_article`)
 1. Pillar post da 1.500-3.000 parole, nella lingua configurata, nel formato di output scelto
@@ -550,7 +620,7 @@ aperte, blocchi e artefatti, alt di tutte le immagini, la tripletta dell'affilia
 | Link interni | `curl -o /dev/null -w '%{http_code}'` su ognuno | tutti **200** |
 | Link esterni | idem | tutti **200** |
 | Slug e meta | `seo/get-post-seo` + `meta/get-post-meta` | titolo ≤60, description 120-160 |
-| Keyword | `_sito_seo_focus_keyword` | impostata |
+| Keyword | il campo del plugin — `_<prefisso>_seo_focus_keyword`, col nome generico della mappa di `CONFIGURAZIONE.md` — si scrive con `meta/update-post-meta` | impostata **e riletta** |
 | Schema | `seo/get-schema-data` | tipo giusto + FAQ se le domande ci sono |
 | Meta FAQ | `_sito_seo_faq` | tante voci quante sono nell'articolo |
 | Blocchi | `gutenberg/validate-content` | `is_valid_gutenberg: true`, 0 problemi, `roundtrip_equal: true` |
@@ -558,6 +628,16 @@ aperte, blocchi e artefatti, alt di tutte le immagini, la tripletta dell'affilia
 | Punteggio | `seo/analyze-post-content` | SEO al massimo; GEO/AEO alti |
 | Privacy | `curl` sull'URL pubblico senza login | **404** (è una bozza) |
 | **Nota nel vault** | `references/vault-obsidian.md` | aggiornata: promessa, collegamenti, fonti con le date, verifiche spuntate |
+**Il controllo più insidioso di questa tabella è la keyword, perché sembra passato.** La parola chiave **non è
+fra i sei campi** di `seo/update-post-seo` (`post_id`, `title`, `description`, `og_title`, `og_description`,
+`og_image`): chiamarla passando anche `focus_keyword` risponde `{"success": true}` **elencando in `updated`
+solo gli altri campi**, e la keyword resta com'era (verificato il 14/10/2026). Si scrive con
+**`meta/update-post-meta`** e si **rilegge** con `meta/get-post-meta` (**la via di scrittura viene dalla prova del
+14/10/2026, su una bozza di prova poi cancellata: non è stata riprovata adesso**. Quello che è verificato il
+17/10 è il **divieto**: i sei campi di `update-post-seo` e la keyword ignorata in silenzio). La regola generale
+che ne nasce, e che vale per ogni scrittura: **dopo aver scritto si rilegge il campo che si voleva cambiare** —
+`success: true` non è la prova che il campo è stato scritto.
+
 **Come si consegna il lavoro all'autore: sempre il link, mai l'allegato.** Verifica sul sito, dal browser:
 per ogni articolo sistemato si dà **l'URL pubblico** della pagina (e, quando servono, i link di
 riferimento delle fonti). Non mandare file in chat — né PDF, né immagini, né rapporti: gli artefatti
@@ -571,43 +651,84 @@ Riferimenti: `references/writer_quality.md`, `references/content-structure-templ
 aggiorna fino alla pubblicazione).
 
 ### 5. Audit EEAT (`audit_eeat`)
-1. Controllo delle affermazioni non supportate e delle invenzioni ("mi ricordo quando…", dati
-   senza fonte).
-2. **Information gain**: almeno 3 concetti che non stanno nei primi 10 risultati.
-3. Valuta la biografia dell'autore per i marcatori di competenza.
-4. Punteggio unico 0-100 (fiducia del contenuto + fiducia dell'autore) in `~/seo-content/audits/`.
+
+**L'information gain si misura su una query precisa: la `keyword_primaria` della voce** (per un articolo già
+pubblicato, la parola chiave del post — si legge dal campo del plugin, non la si deduce). «Almeno 3 concetti
+che non stanno nei primi 10 risultati» vuol dire: si legge la **SERP vera di quella query**
+(`references/ricerca-webcmd.md`) e si elencano i concetti che l'articolo porta e i primi dieci no. **Senza la
+query scritta accanto, il controllo non è verificabile** — ed è per questo che va scritta.
+
+1. Affermazioni non supportate e invenzioni («mi ricordo quando…», dati senza fonte).
+2. **Information gain** sulla query primaria della voce (sopra): almeno 3 concetti che non stanno nei primi 10.
+3. **Chi pubblica**: i segnali che il sito ha davvero (pagina «Chi siamo», box «Chi scrive», archivio
+   dell'autore, JSON-LD). **La persona non si inventa**: un segnale che manca è una voce del rapporto — *da
+   chiedere all'autore* — non una riga da riempire.
+4. **Nessun punteggio inventato**: si risponde alle tre domande di `references/author-eeat-benchmarks.md`,
+   ognuna con la prova accanto, e il rapporto va in `~/seo-content/audits/`.
+
 Riferimenti: `references/author-eeat-benchmarks.md`, `references/writer_quality.md`.
 
 ### 6. Schema JSON-LD (`generate_schema`)
-1. Genera lo schema adatto al tipo di contenuto (Article, FAQ, HowTo, Video, Product, Event…).
-2. Aggancia gli identificativi del Knowledge Graph (Wikidata) dove ha senso.
-3. **Scrittura**: passare dall'abilità `seo/update-schema-data` — **solo con l'ok dell'autore**.
+
+1. Si sceglie il tipo nella tabella «Schema: quale scegliere» qui sopra — per un articolo di blog è
+   `BlogPosting` — e si aggiungono i blocchi (`faq`, `howto`, `video`, `product`…) **solo se si vedono
+   davvero in pagina**.
+2. **Il `sameAs` con i profili social non si imposta da qui.** L'abilità `seo/update-schema-data` ha **14
+   campi** — `post_id`, `schema_type`, `speakable`, `faq`, `howto`, `video`, `product`, `job`, `event`,
+   `course`, `recipe`, `robots`, `canonical_override`, `breadcrumb_label` — e **nessuno riguarda Wikidata o
+   gli identificativi**. Il `sameAs` però **in pagina c'è** e **viene dal profilo dell'autore**: nel JSON-LD di
+   un articolo il nodo `author` è una `Person` con `sameAs` (X, LinkedIn, GitHub) e `jobTitle`, mentre il
+   `publisher` è l'`Organization` del marchio (verificato il 17/10/2026 sull'articolo 1977). Un passo dello
+   schema quindi non serve — e **prima di prescrivere un passo si chiedono i campi veri dell'abilità** con
+   `mcp-adapter-get-ability-info` (`references/abilita-mcp.md`): un passo che l'abilità non permette non è un
+   passo, è un vicolo cieco.
+3. **Scrittura**: `seo/update-schema-data`, **solo con l'ok dell'autore** — e **dopo si rilegge** con
+   `seo/get-schema-data`: `success: true` non è la prova che il campo è stato scritto.
+
 Riferimenti: `references/schema-architect-logic.md`.
 
 ### 7. Intelligenza di sito e mappa delle entità (`site_wide_intelligence`)
-1. Scarica la sitemap.
+1. Scarica la sitemap — **ma è un indice, non un elenco**: `sitemap.xml` è un `<sitemapindex>` che dichiara le
+   figlie (`sitemap-posts.xml`, `-pages.xml`, `-cpt-glossary.xml`, `-cpt-doc.xml`, `-categories.xml` e quelle
+   delle tassonomie). Gli URL stanno **dentro le figlie**: chi legge solo l'indice non ne trova nessuno.
 2. Incrocia gli URL con i dati di Search Console (via Maton) per trovare cosa rende e cosa no.
 3. Costruisci `~/seo-content/shared/ENTITY_MAP.json` (entità del sito e relazioni).
 4. Rapporti di ottimizzazione per singolo contenuto in `~/seo-content/audits/`.
 Per il riepilogo rapido esiste già l'abilità `seo/get-site-seo-summary`.
 
+**Il file degli URL conta solo se è pieno**: un `shared/sitemap-urls.txt` da **0 byte** fa sembrare fatto il
+passo 1 mentre la lista è vuota (verificato il 14/10/2026). Dopo averlo scritto, contarci le righe.
+
 ### 8. Link interni (`inject_internal_links`)
 
 **Una volta per gruppo di articoli: la scansione dei link in entrata su tutto il sito.** Si leggono i contenuti
 di **tutti** i post pubblicati (REST, `_fields=id,title,content`) e per ogni pagina bersaglio si conta in quanti
-articoli compare il suo slug. È il controllo che trova le **pagine orfane**, e nessun altro lo vede: verificato
-il 24/09/2026 sono **quattro**: **224** (errori di sicurezza, 0 in / 24 out), **1441** (dominio e DNS, 0 in / 21
-out), **1412** (menu, 0 in / 13 out) e **1452** (keyword research, 0 in / 18 out). **Non è più un'anomalia ma un
-difetto strutturale del sito**: in tutti e quattro i casi sono **pagine perno molto collegate in uscita che
-nessuno cita** — nessuno cita le pagine che considera «generali», e sono proprio quelle che distribuiscono più
-link al resto. Il caso più stridente è il 1452: **linka tutto il silo di affiliazione (214, 215, 219, 221) e
-nessuno di quei quattro linka lei**. Il rimedio totale è **dodici link** (tre per orfana), ed è l'intervento
-più utile all'architettura del sito.
+articoli compare il suo slug. È il controllo che trova le **pagine orfane**, e nessun altro lo vede.
+
+**Le orfane sono un RISULTATO della scansione, non un elenco da ricordare.** Applicato il rimedio la lista
+cambia, e un elenco vecchio scritto qui manda a sistemare pagine già a posto lasciando invisibili le orfane
+vere. Verificato il 14/10/2026: le **quattro** che il giro del 24/09/2026 dava a zero in entrata (**224**,
+**1441**, **1412**, **1452**) ricevono oggi **8, 8, 4 e 11** link — il rimedio dei dodici link è stato
+applicato e ha funzionato. Le orfane vere di quel giorno erano **quattordici**, quasi tutte **contentuti
+nuovi**: il difetto non si risolve una volta per tutte, **si riforma a ogni articolo scritto**. Quindi la
+scansione si rifà a ogni giro, e il numero si legge dal risultato — non da questa pagina.
+
+**Il tratto che regge è la forma, non l'elenco**: sono pagine **perno molto collegate in uscita che nessuno
+cita** — nessuno cita le pagine che considera «generali», e sono proprio quelle che distribuiscono più link al
+resto. Il rimedio è **tre link per orfana** dalle pagine più vicine, ed è l'intervento più utile all'architettura
+del sito.
 
 **Il conteggio degli zero in entrata va rifatto con un pattern largo.** Cercare solo lo slug esatto può dare
 falsi zeri (link con `?p=<id>`, con URL assoluto, o con il titolo invece dello slug): la scansione buona usa
-un pattern tipo `slug|titolo esteso|\?p=<id>`. Verificato sui due casi: entrambi gli zeri **hanno retto** al
-controllo largo.
+un pattern tipo `slug|titolo esteso|\?p=<id>`.
+
+**Lo slug si LEGGE dal campo `slug` della risposta: non si scrive a mano, mai.** Il pattern largo non salva da
+uno slug inventato. Dedurre lo slug dal titolo (`errori-comuni-wordpress-sicurezza-e-backup` da *«Errori comuni
+con WordPress sicurezza…»*) quando il vero è `errori-comuni-con-wordpress-sicurezza-e-come-evitarli` produce un
+falso «orfana» su una pagina che riceve otto link (verificato il 14/10/2026, l'errore è stato fatto proprio
+qui). Un falso orfana è il difetto peggiore di questo passo: fa *sistemare* la pagina sbagliata e lascia a zero
+quella vera. Prima di dichiarare orfana una pagina si ricontrolla il suo `slug` sulla risposta, e si riconta
+con quello.
 
 Da tenere presente per i gruppi di articoli **con lo stesso schema di titolo** («Errori comuni con
 WordPress…», 222/223/224): sistematicamente **non si linkano fra loro**, e sono i collegamenti più contestuali
@@ -628,27 +749,111 @@ perché i quattro link mancanti sono esattamente il passo successivo che il lett
    fermati alla proposta. In locale: `dry_run` significa "solo proposta, non toccare i file".
 
 ### 9. Ripubblicazione (`repurpose_content`)
-Da un pillar post ricava: thread per X (3 spunti), post LinkedIn (narrativo), teaser newsletter
-(150 parole). Salva in `~/seo-content/distribution/`. Riferimento: `references/funnel-strategy.md`.
+
+Da un pillar post si ricavano **tre pezzi**: il **thread per X**, il **post LinkedIn** (narrativo) e il
+**teaser newsletter** (150 parole). Si salvano in `~/seo-content/distribution/`. Riferimento:
+`references/funnel-strategy.md`.
+
+**Le misure**: il thread sono **7-10 tweet** (è la misura del riferimento, ed è quella giusta: un thread è
+spezzato in passaggi, non è un articolo riassunto in tre righe), il teaser **150 parole**.
+
+**Come si consegna** — la regola della §4 vale anche qui: **il link, non l'allegato**. Qui però l'output non è
+una pagina del sito ma un testo per altre piattaforme: si salva il file in `distribution/` e si consegna **il
+percorso del file**, con i pezzi corti (il teaser) già dentro il messaggio.
+
+**Il controllo sull'output, prima di dirlo pronto** — la §4 ne ha dieci, questa ne ha tre, e sono obbligatori:
+
+1. **nessun termine della lista bandita** di `references/humanizer_config.json` (`banned_vocabulary`): valgono
+   anche fuori dall'articolo, perché il pezzo esce a nome del sito;
+2. **nessun aneddoto inventato**: se un pezzo chiede una voce in prima persona, quella è dell'autore — si
+   chiede, non si scrive (è la stessa regola della §4);
+3. **i numeri del pezzo sono quelli dell'articolo**: se l'articolo dice «7 prove», il tweet non può dire
+   «dieci cose». Si rileggono i due testi uno accanto all'altro prima di consegnare.
 
 ### 10. Quota di voce nell'AI search (`analyze_share_of_voice`)
-Interroga i motori di ricerca AI (Gemini, Perplexity) **con il browser interno** (`browser_exec`,
-anonimo: nessun login serve), estrai i domini citati come fonte, calcola la quota di voce per
-`il-tuo-sito.it` e i "fatti di relazione" che i concorrenti portano e voi no.
 
-### 11. Suite analitica (`analytics_suite`)
-Tutto via Maton:
-- **`low_ctr`**: query con molte impression e pochi clic → proponi titolo e schema nuovi.
-- **`decay`**: URL che perdono più del 20% anno su anno → segnali per il "refresh".
-- **`cannibalization`**: più URL che si contendono la stessa query → 301 o canonical sul perdente.
+Cosa si misura: quante volte `il-tuo-sito.it` è **citato come fonte** quando si chiede a un motore di ricerca AI,
+e i «fatti di relazione» che i concorrenti portano e voi no.
+
+**Le domande, e quante volte.** Si prendono dalle `keyword_primaria` delle voci del piano (§3) e dalle query con
+più impression di Search Console (§11, finestra 90 giorni): sono le domande su cui il sito vuole essere trovato,
+non domande inventate. **Ogni domanda si interroga almeno due volte**, in momenti diversi: le risposte cambiano
+da un'ora all'altra, e una quota misurata su **una sola** interrogazione non è una misura. Per ogni rilevazione
+si annotano **domanda, motore, data e ora**.
+
+**Con che cosa si interroga: `webcmd`** — non `browser_exec`. Il browser interno, senza sessione, è quello che
+**i motori murano tutti** (prova del 14/10/2026: Perplexity e Phind dietro la sfida di Cloudflare, Gemini che
+chiede l'accesso, duck.ai col CAPTCHA alla risposta, you.com mandato alla pagina del prodotto API). Quello di
+`webcmd` è **Cloak**, con una finestra vera, e passa. La sequenza è la stessa della SERP Google in
+`references/ricerca-webcmd.md` (`session create` → `browser run --stdin` → `session close`), e il profilo vero
+sta in `CONFIGURAZIONE.md`: qui si scrive `sito`, che è il **nome generico**.
+
+**Quello che fa passare è il browser, non la sessione — e i motori non sono uguali.**
+
+| Motore (prova del 17/10/2026) | Serve un account? | Esito |
+|---|---|---|
+| **Perplexity** | **no** | risponde per intero, in italiano, con le fonti citate: **è il motore da usare** |
+| **Gemini** | **sì** | risponde, ma solo perché quel profilo ha dentro un account Google |
+| duck.ai | no | la pagina si apre senza muro; l'invio della domanda va ancora agganciato al selettore giusto |
+| you.com | sì | porta al **login**: quel profilo non ha quell'accesso (resta `uuid_guest`) |
+| Phind | — | l'indirizzo di ricerca **non esiste più** (404) |
+
+**Perplexity risponde da anonimo** — verificato il 17/10/2026: la pagina mostrava «Accedi», e i cookie lasciati
+dalla visita sono di Cloudflare e di una **sessione anonima** (`cf_clearance`, `__cf_bm`, `pplx.session-id`),
+**nessun token di login**. Quindi la quota di voce si misura **senza mettere dentro nessun account**: contro la
+sfida di Cloudflare quello che conta è il browser di `webcmd`, non la sessione.
+
+**Dove l'account serve, la privacy si dichiara.** Gemini risponde perché il profilo ha dentro l'accesso vero
+(cookie `SID`/`LSID`): lì **il motore vede chi sta chiedendo** — nome dell'account, cronologia delle
+conversazioni, piano a pagamento — e quella misura **non è anonima**. Il via libera dell'autore è **per la
+singola misura**, non una volta per tutte. Nel rapporto si scrive sempre **da dove viene il dato**: anonimo o
+account.
+
+**Il ripiego che non chiede nessun profilo.** Le query di Search Console dicono su cosa il sito compare; per
+ognuna, **i domini che Google mostra** (SERP vera: `references/ricerca-webcmd.md`, con `web_search` come seconda
+scelta) dicono chi occupa il posto. La quota di voce si calcola lo stesso, con dati che si possono rifare. Serve
+quando l'autore **non vuole** mettere il proprio account nella misura: è una risposta legittima, non un ripiego
+di serie B.
+
+**Se `webcmd` non parte, la diagnosi è `webcmd doctor`**: dice quale dei quattro pezzi manca (daemon, runtime
+Cloak, browser, connettività). Non è mai un problema di pagine. E se il profilo con gli accessi non c'è o è
+scaduto, il sintomo è che il motore torna a chiedere il login: un profilo **ricreato** non è una sessione
+scaduta (`references/ricerca-webcmd.md`).
+
 Output in `~/seo-content/audits/`.
 
+### 11. Suite analitica (`analytics_suite`)
+
+Tutto via Maton, e la chiamata è **una sola**:
+`POST /google-search-console/webmasters/v3/sites/<sito>/searchAnalytics/query` — cambia solo `dimensions`
+(`["query"]` per `low_ctr`, `["page"]` per `decay`, `["query","page"]` per `cannibalization`). Il percorso
+funzionante è già dentro `scripts/stato-sito.py`, che fa la stessa chiamata per il riepilogo: **copiarlo da lì
+invece di ricomporlo**. Output in `~/seo-content/audits/`.
+
+**Endpoint, dimensioni, soglie, il controllo sui due URL e il caso «i dati non ci sono» stanno in
+`references/suite-analitica.md`**: si legge quello prima di chiamare. Qui resta la regola che conta di più.
+
+**Prima di chiamarla cannibalizzazione, si controlla che i due URL rispondano.** La regola «301 o canonical sul
+perdente» presuppone due pagine **vive**. Un URL che Google continua a mostrare ma che oggi risponde **404** non
+è un concorrente: è un **vecchio indirizzo mai rediretto**, e la correzione è un redirect, non un consolidamento.
+Verificato il 14/10/2026: l'unico caso segnalato era una pagina viva più un 404 senza redirect. Un
+`curl -o /dev/null -w '%{http_code}'` su entrambi gli URL costa niente e cambia l'intervento.
+
 ### 12. Bozza su WordPress (`create_wp_draft`)
-1. Immagine in evidenza: genera (vedi sotto), ridimensiona a **1408×768**.
+1. Immagine in evidenza: genera (vedi sotto), ridimensiona a **1408×768**. **Opzionale**: senza la chiave
+   immagini la bozza si crea lo stesso — si dichiara «immagini: da generare» e si parte dal passo 2.
 2. Carica l'immagine: `POST /wp-json/wp/v2/media` con l'application password.
 3. Crea il post: `POST /wp-json/wp/v2/posts` con `status: "draft"` — **mai `publish`**.
-4. Metadati SEO: abilità `seo/update-post-seo` (solo con ok dell'autore).
-5. Verifica: rileggi il post e riporta ID e URL di anteprima.
+4. Metadati SEO: abilità `seo/update-post-seo` (**6 campi**: `post_id`, `title`, `description`, `og_title`,
+   `og_description`, `og_image`) — solo con ok dell'autore. **La parola chiave non è fra quei sei**: si scrive
+   a parte con `meta/update-post-meta` (`_<prefisso>_seo_focus_keyword`), e **dopo si rilegge** con
+   `meta/get-post-meta`: una risposta `success: true` può aver ignorato in silenzio un campo che non conosce.
+5. Verifica: rileggi il post e riporta ID e URL di anteprima. **Una bozza non ha un indirizzo
+   presentabile**: il `link` che WordPress restituisce è `https://<dominio>/?p=<id>`, nudo. L'URL di
+   anteprima è `https://<dominio>/?p=<id>&preview=true` e va composto a mano — serve la sessione
+   dell'autore, quindi si consegna come link da aprire da browser connesso (regola «sempre il link» della
+   §4). E il controllo che dimostra che è rimasta una bozza si fa **prima** di dirlo all'autore: `curl` su
+   `?p=<id>` **senza login** deve rispondere **404**.
 
 ## Immagini: due famiglie, due stili
 
@@ -683,7 +888,9 @@ annunciati contro le voci vicine, aritmetica, artefatti rimasti nel testo, alt d
 interni con etichetta, ripetizioni a mezza frase, intestazioni vuote; `--parole` per il conteggio **prima**
 di creare la bozza, `--json` per usarlo da altri script — limiti e procedura in
 `references/controlli-verifica.md` §8), `genera-immagine.py` (copertina), `genera-infografica.py`,
-`stato-sito.py` (riepilogo SEO e analytics in sola lettura), `calendario.py`, `verifica-avvio.py` (il controllo
+`stato-sito.py` (riepilogo SEO e analytics in sola lettura), `inventario.py` (**rigenera `INVENTARIO.md` dal
+sito**, con titolo SEO, promessa e parola chiave: da lanciare prima di ogni confronto anti-duplicato),
+`calendario.py` (genera `CALENDARIO.md`: coda, bozze e coda di manutenzione), `verifica-avvio.py` (il controllo
 d'avvio: cartella di lavoro, database, credenziali senza mostrarne i valori, MCP provando entrambi gli header,
 REST, Maton).
 

@@ -52,12 +52,12 @@ verifica fatta così dà risposte sbagliate in entrambe le direzioni: un control
 | **reddit-reading** | leggere Reddit dai feed pubblici | skill da `skills.sh`: `hermes skills install reddit-reading` (autore Teknium, MIT) | lo `scripts/reddit.py` della skill `reddit-reading`; una richiesta al minuto, nessuna chiave |
 | **webcmd** | **leggere i siti che richiedono l'accesso** — vedi la sezione qui sotto | `https://github.com/agentrhq/webcmd` · documentazione `https://webcmd.dev/docs` · installazione `npm install -g @agentrhq/webcmd` | daemon locale + profilo `sito` autenticato dall'autore; stato con `webcmd doctor` |
 | **Immagini** *(opzionale)* | copertine e infografiche con `gemini-3-pro-image` (Nano Banana) | `https://pypi.org/project/google-genai/` + `GOOGLE_API_KEY` (modalità `vertexai=True`). **Al 11/10/2026 la chiave non c'è e le immagini non sono nel livello gratuito dell'API**: si genera a mano con l'abbonamento Gemini (`immagini-e-stili.md`) | pacchetto in `~/seo-content/.venv` (google-genai 2.24.0), script in `scripts/` |
-| **DataForSEO** *(opzionale)* | volume di ricerca esatto, CPC, competizione, **difficoltà (KD)**, intento dichiarato | `https://dataforseo.com` — **a consumo**, con credito di prova | chiave nel file di ambiente (`DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD`); script nella skill `seo-keyword-research`. **Senza, il metodo resta completo** (`parole-chiave.md` §3) |
+| **DataForSEO** *(opzionale)* | volume di ricerca esatto, CPC, competizione, **difficoltà (KD)**, intento dichiarato | `https://dataforseo.com` — **a consumo**, con credito di prova | chiave nel file di ambiente (`DATAFORSEO_LOGIN` / `DATAFORSEO_PASSWORD`); script in `scripts/volumes.py`. **Senza, il metodo resta completo** (`parole-chiave.md` §3) |
 | **Bing Webmaster** *(opzionale, gratuito)* | impression settimanali sul mercato Bing, per keyword | `https://www.bing.com/webmasters` — gratuito con un account | `BING_WEBMASTER_API_KEY` nel file di ambiente; `bing.py` |
 | **Parallel** *(opzionale)* | ricerca web e ricerca approfondita con citazioni | `https://parallel.ai` — a consumo | `PARALLEL_API_KEY` nel file di ambiente; la CLI **non legge il file di ambiente da sola** (`set -a; . ~/.hermes/.env; set +a`) |
-| **`seo-keyword-research`** *(skill sorella)* | gli script dei dati: `gsc.py`, `volumes.py`, `bing.py`, `suggest.py`, `wikipedia.py`, `check_credentials.py` | si installa con `hermes skills install` | **questa skill funziona senza**; con lei si sbloccano i dati di `parole-chiave.md` §3 |
+| **Script dei dati** *(dentro questa skill)* | `gsc.py`, `volumes.py`, `bing.py`, `suggest.py`, `wikipedia.py`, `check_credentials.py` | in `scripts/` — non serve installare altro | sbloccano i dati di `parole-chiave.md` §3 |
 | **Mnemosyne** | memoria a lungo termine fra le sessioni | **provider di memoria di Hermes** (`memory.provider: mnemosyne`), skill `mnemosyne-memory-override` | attiva, database SQLite locale |
-| **Skill di supporto** | quando una pagina blocca, l'umanizzazione, le citazioni | installate in Hermes | `blocked-page-recovery` ✅, `humanizer` ✅, `grounded-citations` ✅, `youtube-content`. Il **browser** non è una skill: è lo strumento `browser_exec` di Hermes (usato per le pagine che rispondono 403 all'automazione) |
+| **Skill di supporto** | quando una pagina blocca, l'umanizzazione, le citazioni | installate in Hermes | `blocked-page-recovery` ✅, `humanizer` ✅, `grounded-citations` ✅, `youtube-content`. Il **browser** non è una skill: `browser_exec` è lo strumento interno di Hermes, e **quando una pagina blocca l'automazione non è lui la risposta** — il browser che passa è quello di **`webcmd`** (Cloak, finestra vera) col profilo che ha gli accessi. Verificato il 17/10/2026: i motori AI murano `browser_exec` e rispondono a webcmd |
 
 **Cosa non serve**: `xurl` (la skill c'è ma il binario non è installato, e X ora si legge da webcmd); `gh`
 (GitHub non serve al lavoro editoriale); **`rss-feeds` e `blogwatcher` non sono installate** — per un blog
@@ -122,7 +122,7 @@ Base `https://api.maton.ai`, header `Authorization: Bearer $MATON_API_KEY`, limi
 `template.il-tuo-sito.it` **non è collegato**: né in Search Console né in Analytics. Se serve, va aggiunto prima.
 
 Esempi di chiamata. **Per l'uso normale di Search Console non si scrive questo curl a mano**: si usa
-**`gsc.py`** della skill `seo-keyword-research` (ordina per impression, totalizza il CTR, gestisce la
+**`scripts/gsc.py`** (ordina per impression, totalizza il CTR, gestisce la
 codifica del percorso della proprietà). I curl qui sotto restano per quello che gli script **non** fanno —
 per esempio `urlInspection/index:inspect`, che dice se una URL è indicizzata:
 ```bash

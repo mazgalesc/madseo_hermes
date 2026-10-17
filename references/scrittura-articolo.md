@@ -13,9 +13,14 @@ protetto** e che l'agente non pubblica mai.
 
 ### Stato del progetto
 
-**Stato su il-tuo-sito.it (configurato il 19/09/2026)**: `~/seo-content/shared/PROJECT_STRATEGY.json` è
-pronto — italiano, brand del sito, output HTML, plugin `plugin-seo`, **2 articoli a settimana (martedì e
-venerdì)**, mix funnel 50/30/20. Non serve rifarlo: si aggiorna.
+Il progetto si descrive in `~/seo-content/shared/PROJECT_STRATEGY.json`: lingua, nome del marchio, formato di
+output, plugin SEO, giorni di pubblicazione, mix di funnel. I valori concordati con l'autore: italiano, output
+HTML, **2 articoli a settimana (martedì e venerdì)**, mix funnel 50/30/20.
+
+**Guardare se il file c'è, non darlo per fatto.** Il passo non è saltabile perché «il file è già pronto»:
+verificato il 14/10/2026 il file **non c'era** nella cartella di lavoro, mentre questo testo lo dava per
+presente e diceva di non rifarlo — un onboarding che si fida di questa riga finisce senza il suo output. Se
+manca, si crea chiedendo i valori all'autore: non si inventano, e non si prosegue come se esistesse.
 
 ### Categorie del sito e mappatura del funnel
 
@@ -23,11 +28,16 @@ venerdì)**, mix funnel 50/30/20. Non serve rifarlo: si aggiorna.
 
 | Categoria | ID | Articoli | Funnel |
 |---|---|---|---|
-| WordPress | 3 | 21 | TOFU + MOFU |
-| Affiliazione | 5 | 4 | BOFU + TOFU |
-| Guide AI | 2 | 3 | TOFU |
-| Strumenti AI | 4 | 2 | MOFU + BOFU |
-| Sito (la piattaforma) | 1 | 0 | BOFU — **riservata alla piattaforma** |
+| WordPress | 3 | — | TOFU + MOFU |
+| Affiliazione | 5 | — | BOFU + TOFU |
+| Guide AI | 2 | — | TOFU |
+| Strumenti AI | 4 | — | MOFU + BOFU |
+| Sito (la piattaforma) | 1 | — | BOFU — **riservata alla piattaforma** |
+
+**Gli ID e gli stadi sono stabili; i conteggi no.** La colonna «Articoli» è vuota apposta: si riempie
+leggendo il sito (`…/wp-json/wp/v2/categories?per_page=100&_fields=id,name,count`, oppure `X-WP-Total` per
+stato), perché cambia a ogni pubblicazione. I conteggi che stavano qui erano vecchi di metà in un mese. E il
+**nome** della categoria si legge, non si deduce: la categoria 1 si chiama come il marchio, non «Sito».
 
 ### Il contesto della piattaforma
 
@@ -280,9 +290,12 @@ tocca i titoli**, il testo già dentro un link, gli script e il codice, e non li
 sua stessa pagina.
 
 - **Prima di scrivere**: leggere le voci già presenti —
-  `content/list-posts` con `{"post_type": "glossary", "status": "publish"}` (al 19/09/2026 sono
-  **54**, fra cui Backlink, Anchor text, E-E-A-T, CTR, Crawl budget, Contenuto duplicato,
-  Cannibalizzazione delle keyword, Parola chiave, Permalink, Plugin, Hosting, CMS, Core Web Vitals).
+  `content/list-posts` con `{"post_type": "glossary", "status": "publish"}` — ma **il numero si legge, non
+  si ricorda**: al 19/09/2026 erano 54, al 14/10/2026 sono **133**, più del doppio in meno di un mese. Il
+  totale vero lo dà `X-WP-Total` del REST (`…/wp-json/wp/v2/glossary?per_page=1&status=publish`), perché
+  `content/list-posts` risponde `total: null` (`abilita-mcp.md`). Fra le voci: Backlink, Anchor text, E-E-A-T,
+  CTR, Crawl budget, Contenuto duplicato, Cannibalizzazione delle keyword, Parola chiave, Permalink, Plugin,
+  Hosting, CMS, Core Web Vitals.
   **Se il glossario spiega già un concetto, nell'articolo non si ripete**: si nomina e basta, il
   link e l'anteprima li mette il tema. Così le due cose non si fanno concorrenza.
 - **Dopo aver scritto**: scorrere l'articolo e cercare i **concetti** che meriterebbero una voce e
@@ -312,8 +325,11 @@ la categoria è stata dimenticata e l'autore l'ha dovuta segnalare. Le sei categ
 | Intelligenza artificiale | `intelligenza-artificiale` | IA generativa, modelli, prompt, allucinazioni |
 
 `content/create-post` accetta `category_ids` per le categorie del **blog**, non per la tassonomia del
-glossario: la categoria della voce si assegna a parte, e poi si **rilegge** (`wp_get_post_terms`) per
-confermarlo.
+glossario: la categoria della voce si assegna a parte, e poi si **rilegge** per confermarlo. La rilettura si fa
+**dal REST**: `GET …/wp-json/wp/v2/glossary_category` elenca i sei termini, e
+`…/glossary?per_page=100&_fields=id,title,glossary_category` mostra la categoria di ogni voce. **Non** con
+`wp_get_post_terms`: è una funzione PHP di WordPress e un agente non può chiamarla (verificato il 14/10/2026).
+Zero voci senza categoria sulle 133 del sito, quindi il difetto delle origini non si ripresenta.
 
 ### Come è fatta una voce buona
 

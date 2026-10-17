@@ -46,22 +46,41 @@ controllate**: prima di usarlo per confronti, verificarlo; l'identificativo che 
 |---|---|---|---|
 | `keyword_primaria` | TEXT | la query principale della pagina — la stessa cosa che va in `_sito_seo_focus_keyword` | dalla colonna `query` del piano del 23/09, oppure quando si scrive o si verifica l'articolo |
 | `intento` | TEXT | l'intento della voce (`informativo`, `problem solving`, `commerciale`, `transazionale`) | dalla colonna `intenzione` del piano — è la stessa da cui è derivato `funnel_stage` |
-| `refresh_at` | DATE | quando la pagina va riguardata (§3-bis del `SKILL.md`) | per le pagine pubblicate = **data di pubblicazione + 3 mesi** |
+| `refresh_at` | DATE | quando la pagina va riguardata (§3-bis del `SKILL.md`) | per le pagine pubblicate = **data di pubblicazione + 3 mesi**, letta da WordPress (`date` del post): **si calcola, non si scrive a mano**. Formato **ISO** (`2026-10-12`) come `scheduled_date` — una data con le barre (`12/10/2026`) è ambigua (12 ottobre o 10 dicembre?) e non si interpreta |
 | `promessa` | TEXT | la promessa che la pagina fa al lettore, in una riga (`pianificazione-e-duplicati.md` §3) | si ricava dal **titolo SEO + description + H2 vivi**; **non si inventa** |
 | `copre_gia` | TEXT | l'id del contenuto con cui la voce è vicina | dalla mappa del cluster (`pianificazione-e-duplicati.md` §5) |
 
-**Stato del riempimento al 01/10/2026:** `refresh_at` **37/67** (tutte le pubblicate, con la data vera
-letta da WordPress), `keyword_primaria` e `intento` **28/67** — sono le righe che vengono dal piano del
-23/09/2026, le uniche che hanno il dato scritto. Le altre restano vuote e si riempiono **man mano che si
-lavora l'articolo**: non si inventano.
+**Quali righe sono piene non si ricorda: si conta.** Quante righe hanno `refresh_at` e quante
+`keyword_primaria` si legge dal database quando serve
+(`sqlite3 lavoro.db "select count(*) from content_calendar where keyword_primaria is not null and keyword_primaria != ''"`) —
+i totali scritti in un file invecchiano come tutti gli altri. **Le righe che restano vuote si riempiono man
+mano che si lavora l'articolo, e non si inventano.**
+
+**Le righe già scritte hanno la parola chiave sul sito, anche quando nel database è vuota.** Per una riga
+`Draft` il campo `keyword_primaria` si riempie **leggendolo dal post** (`meta/get-post-meta`,
+`_<prefisso>_seo_focus_keyword`) — mai deducendolo dal titolo. Verificato il 17/10/2026: le 15 righe `Draft`
+del database erano **tutte** vuote, mentre sul sito **13** di quei post avevano la parola chiave scritta (2
+no: quelle restano vuote, è un dato e non una mancanza da coprire).
 
 **`promessa` e `copre_gia` sono richieste dall'11/10/2026** (dall'audit dei contenuti: la cannibalizzazione
 si evita confrontando le promesse, non i titoli). Al primo allestimento del database si creano insieme
 alle altre; se la tabella esiste già si aggiungono con `ALTER TABLE content_calendar ADD COLUMN …`.
 
-**Dove vive la keyword obiettivo.** Sta in `postmeta` (`_sito_seo_focus_keyword`) e **non è fra i campi
-che l'API REST pubblica** (che espone solo `_sito_seo_faq`, `_sito_seo_howto` e `footnotes`): si legge
-via MCP (`meta/get-post-meta`, `seo/get-post-seo`) o dall'editor di WordPress.
+**Dove vive la keyword obiettivo.** Sta in `postmeta` e **non è fra i campi che l'API REST pubblica**: con
+`context=edit` il REST espone solo `_sito_seo_faq`, `_sito_seo_howto` e `footnotes` (verificato il
+17/10/2026). Si legge via MCP con **`meta/get-post-meta`**, e il nome del campo è
+`_<prefisso>_seo_focus_keyword`, dove il prefisso è quello del **namespace delle abilità** (`seo/*` è il nome
+generico: su questo sito il plugin si chiama `madweb-seo`, quindi la chiave è `_madweb_seo_focus_keyword`).
+Interrogare il nome generico risponde `{"meta":[]}` e fa concludere «manca» su un campo che c'è.
+**`seo/get-post-seo` non la restituisce**: i suoi campi sono `title`, `description`, `seo_title`,
+`seo_description`, `og_title`, `og_description`, `og_image`, `robots`, `canonical_url`, `title_source`,
+`description_source`, `native_title`.
+
+**La keyword si SCRIVE con `meta/update-post-meta`.** `seo/update-post-seo` ha **sei campi** (`post_id`,
+`title`, `description`, `og_title`, `og_description`, `og_image`) e la parola chiave **non c'è**: passandola
+lo stesso, la risposta è `{"success": true}` con la keyword rimasta invariata — un campo sconosciuto viene
+ignorato **in silenzio**. Dopo la scrittura si rilegge con `meta/get-post-meta`, e se è immutata la scrittura
+non è avvenuta.
 
 **I 401 annotati prima non sono una prova di blocco.** Un `401` misurato su questo sito può essere
 l'artefatto della lettura sbagliata delle credenziali (i valori di `.env` e di `wp-credentials.env` non hanno

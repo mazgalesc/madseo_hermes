@@ -11,7 +11,7 @@ La skill è divisa in due: **questo file** (il banco di lavoro: regole, strument
 **`references/`** (i cataloghi: ricette, trappole, regole di scrittura). **Se cerchi una regola e non è
 qui, è in uno di questi file.**
 
-**I 35 file di `references/`, tutti qui** (i pesi misurati: se un peso non torna,
+**I 38 file di `references/`, tutti qui** (i pesi misurati: se un peso non torna,
 il file è cambiato — aggiornare la riga).
 
 *Il lavoro, nell'ordine in cui si usa:*
@@ -21,6 +21,8 @@ il file è cambiato — aggiornare la riga).
 | **`references/ricerca-webcmd.md`** | il giro di ricerca: ambiente e sessione, i programmi (SERP, Quora, Reddit, X, LinkedIn), come si legge una SERP, il blocco «Le persone hanno chiesto anche», la controprova dei suggerimenti, i segnali da non lasciar passare | 25 KB |
 | **`references/ricerca-omnichannel.md`** | i canali della ricerca in ordine di lavoro, cosa si cerca in ciascuno, cosa si scrive nel rapporto | 10 KB |
 | **`references/parole-chiave.md`** | **quali parole chiave scegliere e perché**: prima l'intento poi il volume, le 4 categorie di intento lette dalla SERP, i 5 passi, **cosa possiamo misurare — due livelli: gratis sempre, a pagamento opzionale (DataForSEO) con le regole anti-spreco**, una keyword primaria = un contenuto, la revisione trimestrale | 13 KB |
+| **`references/parole-chiave-strumenti.md`** | **il banco degli attrezzi delle parole chiave** (incorporato il 17/10/2026): le regole sui dati, l'ordine del lavoro, l'audit dei contenuti contro le keyword che dichiarano, il giudizio sull'intento sulla SERP vera, i programmi con i comandi (`gsc.py`, `suggest.py`, `bing.py`, `wikipedia.py`, `volumes.py`, `check_urls.py`, `check_credentials.py`), la verifica delle credenziali **gratis prima di spendere**, le trappole, la verifica finale | 22 KB |
+| **`references/free-keyword-data-sources.md`** | **la tabella delle fonti delle parole chiave**: cosa dà gratis e cosa a consumo, prezzi e limiti dichiarati (i prezzi si riverificano sulla pagina prima di citarli) | 10 KB |
 | **`references/scrittura-articolo.md`** | come si scrive un articolo: **il test prima di scrivere**, le regole editoriali e il livello del lettore, formato e lunghezza, i blocchi dell'editor, il blocco FAQ, il glossario | 23 KB |
 | **`references/audit-contenuti-pubblicati.md`** | il giro di verifica degli articoli **già pubblicati**: le 5 fonti, la pagina intera al secondo lettore, le trappole della misurazione (i difetti falsi), dove sta la causa, la forma del rapporto | ≈33 KB |
 | **`references/audit-bozze.md`** | il giro di verifica delle **bozze**: cosa cambia rispetto ai pubblicati, i campi da controllare, i comandi che verificano citazioni e dati, i difetti che ricorrono in tutte le bozze, la forma del rapporto | *(peso da misurare)* |
@@ -32,9 +34,10 @@ il file è cambiato — aggiornare la riga).
 | **`references/pianificazione-e-duplicati.md`** | **prima di scegliere un titolo**: l'inventario in quattro elenchi, la promessa di un contenuto, il confronto sui contenuti vivi, la mappa del cluster, le pagine orfane | ≈8 KB |
 | **`references/fonti.md`** | **a chi credere**: la gerarchia delle fonti (ufficiale → normativa/scientifica → API → stampa → community), i divieti (attribuzioni anonime, dataset e «team» inventati), le prove di prima mano, il «non l'ho verificato» | ≈8 KB |
 | **`references/controlli-verifica.md`** | **prima di dire «pronto»**: i controlli incrociati che mancavano — conteggi annunciati vs elenchi, aritmetica, riquadro vs corpo, sintesi vs prova, promesse, blocchi, artefatti, alt, affiliazione | ≈10 KB |
+| **`references/suite-analitica.md`** | **misurare i risultati**: la chiamata di Search Console, le tre analisi con le soglie, il controllo che i due URL esistano prima di parlare di cannibalizzazione, cosa fare quando i dati non ci sono | 4 KB |
 | **`references/pubblicazione-e-contributi.md`** | **portare la skill su una repo pubblica**: la scansione dei segreti (e la trappola del valore troncato dalla shell), cosa rendere generico, licenza, igiene del commit, cosa deve contenere una PR | ≈11 KB |
 | **`references/trappole.md`** | **tutte** le trappole verificate in un file solo: codici HTTP, fonti, pagine a zero impression, schema, meta, marcatori rotti, blocchi e media, domanda, bozze | 39 KB |
-| **`references/regole-di-controllo.md`** | le regole dettate dall'autore il 30/09/2026 e come si applicano a ogni passo | 3 KB |
+| **`references/regole-di-controllo.md`** | le regole dettate dall'autore il 30/09/2026 e come si applicano a ogni passo, **più i tre esiti della manutenzione** (aggiornare, consolidare, togliere) con i criteri | 4 KB |
 
 *Tecnica e misure di questo sito:*
 
@@ -55,11 +58,11 @@ non vale qui, e la riga dice quale; *da verificare* = non è stata controllata c
 |---|---|---|---|
 | **`references/content-structure-templates.md`** | modelli di struttura degli articoli (blog, pillar, confronti, listicle, how-to, recensione, FAQ) | 17 KB | **vivo** — corretto il 01/10/2026: aveva una sottiglia ``` mancante (un blocco restava aperto e il markdown dopo veniva letto come codice) |
 | **`references/title-formulas.md`** | formule di titolo e pattern di CTR | 10 KB | **vivo** |
-| **`references/funnel-strategy.md`** | TOFU/MOFU/BOFU, mappatura sulle categorie, motore di riuso | 3 KB | **parziale** — la regola 50/30/20 e la mappatura valgono; gli esempi sono americani |
+| **`references/funnel-strategy.md`** | TOFU/MOFU/BOFU, mappatura sulle categorie, motore di riuso | 3 KB | **vivo** — tradotto in italiano e allineato il 17/10/2026: era in inglese con termini non spiegati, e il thread diceva una misura diversa dalla §9 |
 | **`references/roadmap-strategy.md`** | roadmap a 3 fasi (fondamenta → autorità → conquista) | 4 KB | **vivo** — le tre fasi valgono; la priorità si calcola **a due velocità** (senza volume e difficoltà è il caso normale, e va bene; con il livello opzionale si aggiungono volume, difficoltà e intento dichiarato) |
 | **`references/schema-architect-logic.md`** | logica dello schema JSON-LD | 2 KB | **vivo** |
 | **`references/writer_quality.md`** | standard qualitativi e punteggio di audit | 2 KB | **vivo** |
-| **`references/author-eeat-benchmarks.md`** | marcatori di competenza dell'autore | 1 KB | **vivo** |
+| **`references/author-eeat-benchmarks.md`** | **chi pubblica, e perché credergli**: i segnali che il sito ha davvero (pagina «Chi siamo», box «Chi scrive», archivio, JSON-LD), le tre domande al posto del punteggio, e la regola **«la persona non si inventa»** | 4 KB | **vivo** — riscritto il 17/10/2026: era in inglese, scritto per un autore-persona, e applicato a un sito che pubblica come marchio dava 20/100 spingendo a inventare una biografia |
 | **`references/engine_strategy.md`** | framework omnichannel 3.0, quota di voce AI | 1 KB | **parziale** — le 4 fasi e il ricontrollo a 90 giorni valgono; «scrape Discord» e altre fonti **non si usano** |
 | **`references/geo-sync-logic.md`** | ancoraggio delle relazioni per l'AI search | 1 KB | **vivo** |
 | **`references/local-compliance-benchmarks.md`** | standard di SEO locale e conformità | 1 KB | **da verificare** — il sito non ha Local Business configurato: da controllare prima di usarlo |
@@ -70,7 +73,7 @@ non vale qui, e la riga dice quale; *da verificare* = non è stata controllata c
 questa macchina **non si usano** e vanno letti con questa avvertenza:
 `roadmap-strategy.md` calcola la priorità con **volume mensile e difficoltà**: quei due dati **non
 arrivano dal livello gratuito**, quindi la formula si applica solo con il livello opzionale a
-pagamento (skill `seo-keyword-research`) — senza, vale `parole-chiave.md` §4 passo 5, ed è il caso
+pagamento (`parole-chiave-strumenti.md`) — senza, vale `parole-chiave.md` §4 passo 5, ed è il caso
 normale; `engine_strategy.md` prescrive di «scrape Discord» e altre fonti che non usiamo;
 `funnel-strategy.md` ha esempi americani (la regola 50/30/20 e la mappatura sulle categorie restano
 valide).

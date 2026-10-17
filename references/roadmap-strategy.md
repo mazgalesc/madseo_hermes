@@ -26,7 +26,7 @@ velocità**, e la seconda non è «meglio» della prima: è la prima con due num
   perché prima serve autorità sull'argomento.
 - **Da non fare**: valore dichiarato 0-2, oppure intento **navigazionale** → non entra in piano.
 
-**Con volume e difficoltà disponibili** (skill `seo-keyword-research` e `DATAFORSEO_LOGIN` nel file di
+**Con volume e difficoltà disponibili** (`DATAFORSEO_LOGIN` nel file di
 ambiente) ai due passaggi se ne aggiungono tre, e cambia il peso delle decisioni:
 
 - **volume = filtro, non obiettivo.** Circa il 95% delle keyword sta sotto le 10 ricerche al mese: la

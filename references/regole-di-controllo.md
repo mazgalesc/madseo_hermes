@@ -37,4 +37,34 @@ Da leggere **prima di iniziare** e **prima di ogni passo**, non una volta sola.
 - Prima di ogni passo: leggere le regole, dichiarare **in una riga** cosa si sta per fare e cosa non si è rispettato finora.
 - Un ordine non si allarga mai: si tocca **solo l'elenco esatto nominato** dall'autore (post, file, righe), mai «tutto ciò che corrisponde a una caratteristica».
 - Niente scritture su sito, file o database senza un ordine esplicito e un elenco nominato.
-- Nessuna dichiarazione di esito senza la prova accanto; quello che non è stato fatto o verificato si dichiara.
+- **Una riuscita non spiega perché è riuscita.** Se una prova funziona, non si scrive *perché* funziona senza
+  una **controprova** (la stessa prova senza la condizione che si crede necessaria). Scritto dopo un errore
+  vero: «i motori AI rispondono col profilo che ha gli accessi dentro» era **falso** — rispondevano **da
+  anonimi**, e quello che passava era il browser, non il login (verificato il 17/10/2026 guardando i cookie,
+  che erano di una sessione anonima e creati dalla prova stessa).
+- **Prima di prescrivere un passo, si chiedono i campi veri dello strumento** (`mcp-adapter-get-ability-info`):
+  un passo che l'abilità non permette è un vicolo cieco, e chi lo esegue si ferma senza sapere perché.
+
+## I tre esiti della manutenzione (sono la §3-bis del `SKILL.md`)
+
+Quando i dati della suite analitica (`low_ctr`, `decay`, `cannibalization`) segnalano una pagina, si sceglie
+**uno dei tre esiti**, in ordine di costo crescente. Sono scritte qui perché è questo il file che si legge
+prima di decidere:
+
+| Esito | Quando | Come |
+|---|---|---|
+| **Aggiornare** | la pagina perde posizioni o è invecchiata, ma la promessa regge | refresh: dati, date e versioni nuovi; poi si rilegge e si valida come un articolo nuovo |
+| **Consolidare** | due pagine **nostre e vive** si contendono la stessa query (cannibalizzazione) | si fondono nella più forte, con redirect dalla perdente |
+| **Togliere** | non ha traffico, non ha link, non serve a nessuno | disindizzazione o rimozione, con redirect alla pagina più simile |
+
+**I criteri per «togliere» si fissano prima, non quando il caso si presenta:** zero traffico organico, zero
+link in entrata, nessuna conversione. Attenzione a un dettaglio: **una pagina con zero visite non compare in
+Analytics**, quindi il conteggio va fatto con un crawler o guardando le pagine a traffico bassissimo — non
+fidandosi del report.
+
+**Prima di chiamarla cannibalizzazione, i due URL si controllano**: se uno risponde **404** non è un
+concorrente, è un vecchio indirizzo mai rediretto, e il rimedio è un redirect (`references/suite-analitica.md` §3).
+
+**La manutenzione propone, non esegue.** Nessuna cancellazione, disindizzazione o fusione senza l'ordine
+esplicito dell'autore **e un elenco nominato di contenuti**. Prima di toccare una pagina si salva il contenuto
+in `~/seo-content/audits/backup-articoli/`.

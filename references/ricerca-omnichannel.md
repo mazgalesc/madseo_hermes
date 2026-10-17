@@ -40,7 +40,7 @@ passi non eseguiti.
 
 ### Il dettaglio dei canali
 
-1. **Espandi le query** con **`suggest.py`** della skill `seo-keyword-research`
+1. **Espandi le query** con **`scripts/suggest.py`**
    (`client=chrome&hl=it&gl=it`): dà le varianti che le persone digitano davvero, **in italiano**. Con un
    seme italiano i risultati sono italiani; con un seme internazionale ("strategia seo") arrivano
    anche varianti straniere.

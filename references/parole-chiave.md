@@ -57,7 +57,7 @@ Verificato con `GET https://api.maton.ai/connections` → **HTTP 200, 3 connessi
 | Query che portano già impression e clic | **sì** | Search Console via Maton (chiamate in `ambiente-setup-maton.md`) |
 | Posizione media e pagine che le intercettano | **sì** | Search Console |
 | CTR reale di una query | **sì** | Search Console (clic ÷ impression) |
-| Impression sul mercato Bing | **sì, se la chiave c'è** | Bing Webmaster Tools (`bing.py` della skill `seo-keyword-research`) |
+| Impression sul mercato Bing | **sì, se la chiave c'è** | Bing Webmaster Tools (`scripts/bing.py`) |
 | Esistenza e forma della domanda | **sì** | i suggerimenti Google, la SERP vera, Reddit, Quora, i forum |
 | Quanto un argomento viene letto | **sì** | Pageviews di Wikipedia (`wikipedia.py`) |
 | Andamento nel tempo | **parziale** | confronto fra due finestre di Search Console |
@@ -74,7 +74,7 @@ posto del volume funziona bene — ed è già la prassi di questa skill:
 
 ### Il livello a pagamento — **opzionale**, e quando c'è si dichiara
 
-Con la skill sorella **`seo-keyword-research`** installata e `DATAFORSEO_LOGIN` nel file di ambiente si
+Con **`DATAFORSEO_LOGIN`** nel file di ambiente si
 sbloccano **volume di ricerca esatto, CPC, competizione, difficoltà (KD) e intento dichiarato** per le
 keyword che si indicano. È lo stesso dato che vendono i tool SEO, pagato a richiesta invece che in
 abbonamento.
@@ -101,7 +101,7 @@ le keyword impossibili si scoprono solo dopo averle scritte).
 | **Sotto ~400 keyword conviene l'altra strada** (endpoint Labs, a consumo) | il prezzo fisso conviene sulle liste lunghe; sulle corte si paga troppo |
 
 **Quale endpoint risponde a quale domanda.** I nomi servono a chiedere la cosa giusta; i comandi stanno
-nella skill `seo-keyword-research`.
+in `parole-chiave-strumenti.md`.
 
 | Domanda | Endpoint |
 |---|---|
@@ -110,8 +110,8 @@ nella skill `seo-keyword-research`.
 | «che intento ha?» (controprova di quello letto dalla SERP) | `dataforseo_labs/google/search_intent` |
 | «che keyword ci sono intorno a questo tema?» | `dataforseo_labs/google/keyword_ideas`, `related_keywords` |
 
-Comandi, prezzi per esteso e dettaglio operativo stanno nella skill **`seo-keyword-research`**
-(`volumes.py`, `check_credentials.py`, `references/free-keyword-data-sources.md`): **qui resta il metodo,
+Comandi, prezzi per esteso e dettaglio operativo stanno in **`parole-chiave-strumenti.md`**
+(`scripts/volumes.py`, `scripts/check_credentials.py`, `references/free-keyword-data-sources.md`): **qui resta il metodo,
 là lo strumento.**
 
 ## 4. I cinque passi
@@ -120,7 +120,7 @@ là lo strumento.**
 affiliazione, guide AI, strumenti AI) e i problemi che il lettore ha davanti. Si pensa a come
 digiterebbe lui: «come», «quanto costa», «perché non funziona», «quale scegliere».
 
-**Passo 2 — Espansione con i suggerimenti.** Si usa **`suggest.py`** della skill `seo-keyword-research`
+**Passo 2 — Espansione con i suggerimenti.** Si usa **`scripts/suggest.py`**
 (Google + Bing, senza chiavi, nessun account): dà le varianti in italiano che le persone digitano davvero, e
 gestisce da sé la **trappola della decodifica** — la risposta non è sempre UTF-8 valido, e la lettura
 rigida muore con `UnicodeDecodeError` o rende gli accenti storti. Se serve a mano:

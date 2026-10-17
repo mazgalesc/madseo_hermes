@@ -2,6 +2,11 @@
 
 > *Estratto da `SKILL.md` il 24/09/2026 per dimensione, contenuto invariato; le intestazioni sono state aggiunte per rendere il file navigabile.*
 
+> **I nomi generici di questo file.** `sito` è il nome con cui la skill chiama **il profilo webcmd che ha dentro
+> gli accessi**: su un'installazione vera il profilo si chiama altrimenti (e può essere **uno solo**). La
+> corrispondenza sta in `CONFIGURAZIONE.md`; nei comandi che si copiano, `sito` si sostituisce col nome vero.
+> Lo stesso vale per `il-tuo-sito.it` e per i percorsi `~/seo-content/…`.
+
 ## Il giro di ricerca: la SERP vera, Quora e le community
 
 ### Il giro di ricerca con webcmd — SERP Google vera e Quora (verificato il 24/09/2026)
@@ -14,8 +19,8 @@ simile, non quella di Google. La SERP vera (italiana, con il profilo `sito` dell
 
 **Verifica dell'ambiente** (sola lettura, si fa quando qualcosa non torna):
 ```bash
-webcmd doctor            # daemon, runtime Cloak, connettività
-webcmd profile list      # profili: `default` e `sito` (quest'ultimo è quello con gli accessi)
+webcmd doctor            # daemon, runtime Cloak, browser, connettività
+webcmd profile list      # i profili di questa installazione (il nome vero di quello con gli accessi è in CONFIGURAZIONE.md)
 ```
 Il `sito` risulta «not connected» finché non si apre una sessione: è normale, non è scollegato.
 

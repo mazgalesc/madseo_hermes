@@ -40,6 +40,27 @@ Prima di qualsiasi scelta si costruiscono **tutti e quattro** gli elenchi. Un co
 L'inventario si salva in un file rigenerabile (`INVENTARIO.md` nella cartella di lavoro condivisa), con
 per ogni voce: **id, stato, slug, titolo nativo, titolo SEO, description, categoria**.
 
+**«Rigenerabile» vuol dire «da rigenerare PRIMA di usarlo», non «che si aggiorna da sé».** Nessuno script lo
+ricostruisce: il giro è a mano — REST per l'elenco, `seo/get-post-seo` per titolo SEO e description, e i
+**conteggi da `X-WP-Total`** (perché `content/list-posts` risponde `total: null`, vedi `abilita-mcp.md`).
+Un inventario vecchio è **peggio di nessun inventario**: dice «libera» a una promessa già coperta, che è
+esattamente l'errore che questo passo esiste per evitare. Verificato il 14/10/2026: il file dichiarava 45
+pubblicati e 15 bozze mentre il sito ne aveva 46 e 14, e nella coda c'era una voce la cui promessa era già
+mantenuta da un articolo pubblicato. Quindi: **prima di ogni confronto si rilegge lo stato vero dal sito**, e
+il numero scritto nell'intestazione del file non si cita come se fosse corrente.
+
+**E lo stato di ogni riga si verifica sul sito: una «bozza» in elenco può essere pubblica.** Il database e
+`INVENTARIO.md` dicono cosa risultava quando sono stati scritti. Prima di usarli si interroga il sito per
+ogni id — `curl -s -o /dev/null -w '%{http_code}' '<sito>/?p=<id>'` **senza login**: **404 = è ancora una
+bozza**, **301/200 = è viva** (il `301` porta l'indirizzo definitivo, cioè lo **slug vero** da usare nei
+conteggi). Il totale dei pubblicati non si legge dall'intestazione del file: `curl -s -D - -o /dev/null
+'<sito>/wp-json/wp/v2/posts?per_page=1&status=publish'` e si guarda **`X-WP-Total`**; per gli stati non
+pubblici (`draft`, `future`) la stessa intestazione arriva solo su una richiesta autenticata.
+Verificato il 17/10/2026: la coda dichiarava 15 bozze e il sito ne aveva **13** — due righe `Draft` erano
+online da giorni, e la coda mandava a scrivere articoli già pubblicati. Il numero non si cita: si rimisura.
+**Se una riga risulta pubblicata mentre il piano la dice bozza: si chiede all'autore e non si tocca niente**
+(regola in testa al `SKILL.md`).
+
 **Poi** si aggiungono le due liste che nessun elenco di WordPress dà:
 - le **pagine orfane** (zero link in entrata) — servono alla §8 del `SKILL.md`;
 - le promesse **già scritte ma non linkate** (*«le trovi nella nostra guida…»* senza link): sono promesse

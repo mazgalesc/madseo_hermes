@@ -26,6 +26,8 @@ dice solo che il file non esiste.
 | 6 | Variabili d'ambiente in `~/.hermes/.env` | agente | sì | gli script ripiegano su valori di esempio |
 | 7 | `CONFIGURAZIONE.md` nella cartella di lavoro | agente, valori dall'autore | sì | i nomi generici restano senza corrispondenza |
 | 8 | La prova finale (MCP, REST, Search Console, Analytics) | agente | sì | quello che manca si **dichiara** |
+| 9 | Le fonti dei dati delle parole chiave (Search Console via Maton, DataForSEO, Bing) | l'autore le chiavi, l'agente la verifica | no: il metodo resta completo senza | si dichiara il buco (`parole-chiave.md` §3) |
+| 10 | **Il primo set di parole chiave** (semi, espansione, volume dove c'è) | agente, con l'autore che risponde sul posizionamento | sì, per poter pianificare | senza, il piano si costruisce a intuito |
 
 ## Passo per passo
 
@@ -119,6 +121,34 @@ Analytics, con il riepilogo di quello che manca. Il resto delle verifiche è in 
 Search Console e Analytics (via curl a Maton), browser e `webcmd`. Quello che manca **si dichiara**:
 immagini, Scrapling e `ddgs` sono **opzionali** e hanno il loro ripiego — non bloccano il resto.
 
+### 9. I dati delle parole chiave (e il primo set)
+
+**Prima si prova gratis che le chiavi siano vive** — mai una chiamata a pagamento per scoprire se una
+chiave funziona:
+
+```bash
+python3 scripts/check_credentials.py
+python3 scripts/check_credentials.py --term hosting --country it --language it-IT
+```
+
+Prova DataForSEO (`user_data`, costo 0), Bing (`GetKeywordStats`) e Maton (`/connections`, che elenca
+Search Console e le due connessioni Analytics) e stampa **presenza e lunghezza, mai i valori**. Le
+stesse prove sono già nella §8: qui servono per sapere *cosa si può chiedere* prima di scrivere il piano.
+
+**Poi il primo set**, con l'ordine di `parole-chiave-strumenti.md` (il metodo è in `parole-chiave.md`):
+
+1. **Search Console per prima** — `scripts/gsc.py --days 90 --dims page`: cosa il sito già prende e le
+   quasi-vicine (posizioni 5-20) da riscrivere. Se non c'è niente, è un sito nuovo: si dichiara.
+2. **Semi** — 10-20 termini dalle categorie attive del sito e dai problemi che il lettore ha davanti.
+3. **Espansione gratuita** — `scripts/suggest.py` (Google + Bing, senza chiavi, nessun account).
+4. **Volume, dove c'è** — `scripts/bing.py` (impression Bing, gratuito) e, se la chiave c'è,
+   `scripts/volumes.py` per volume reale e difficoltà. **La spesa si propone prima di farla.**
+5. **Dove finiscono i file** — `shared/keywords/`, un CSV per lotto **con la data nel nome**, più
+   l'indice `shared/keywords/README.md` (cosa contiene, fonte, data, costo, comando per rifarlo,
+   limiti). Le keyword scelte entrano nel piano (§3) e nel vault.
+
+Un contenuto senza keyword dichiarata non entra nel piano: è il primo campo da riempire, non l'ultimo.
+
 ## Il controllo finale
 
 - [ ] cartella di lavoro con le cinque sottocartelle (`content`, `audits`, `distribution`, `shared`, `archivio`) e il database con la tabella
@@ -127,6 +157,8 @@ immagini, Scrapling e `ddgs` sono **opzionali** e hanno il loro ripiego — non 
 - [ ] variabili d'ambiente impostate e provate con uno script
 - [ ] `CONFIGURAZIONE.md` compilato
 - [ ] vault collegato (se si usa)
+- [ ] le chiavi delle parole chiave provate **gratis** (Maton, DataForSEO, Bing) e il buco dichiarato
+- [ ] primo set di parole chiave in `shared/keywords/`, con l'indice `README.md` accanto
 - [ ] la prova dice OK su quello che serve; quello che manca è dichiarato
 - [ ] **nessun valore reale nel repository**: un `grep` finale dei nomi concreti nei file pubblicabili
 
@@ -136,3 +168,5 @@ immagini, Scrapling e `ddgs` sono **opzionali** e hanno il loro ripiego — non 
 - **Non si chiedono né si scrivono password in chat.**
 - **Non si pubblica nulla**: il contenuto lo pubblica solo l'autore (regola 1).
 - **Non si mettono percorsi, domini o identificativi nel repository**: stanno nel file locale.
+- **Non si spende per scoprire se una chiave funziona**: prima le prove gratuite (Maton `/connections`,
+  DataForSEO `user_data`, Bing `GetKeywordStats`) — vedi il passo 9.

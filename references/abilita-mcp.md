@@ -110,6 +110,13 @@ Sequenza provata creando la bozza 1472:
 
 Per **leggere le bozze esistenti**: `content/list-posts` con `{"status": "draft"}` (risposta in `data.posts[]`, campi `id`, `title`, `status`, `link`).
 
+**I conteggi NON si leggono da lì.** `content/list-posts` risponde `total: null` e `total_pages: null`
+(verificato il 14/10/2026): dice quanti elementi ha **questa pagina** (`returned`) e se c'è dell'altro
+(`has_more`), non quanti sono in tutto. Per un totale vero si usa il REST — l'intestazione **`X-WP-Total`** di
+`curl -s -D - -o /dev/null -u … '<sito>/wp-json/wp/v2/posts?per_page=1&status=<stato>'` — oppure si pagina
+finché `has_more` è falso. Chi legge la prima pagina da 100 e la chiama «totale» su un elenco di 133 sbaglia
+di un terzo.
+
 **Attenzione ai nomi dei parametri (trappola silenziosa)**: le abilità `content/*` che modificano
 un contenuto esistente usano **`id`** — `content/update-post`, `content/patch-post`,
 `content/delete-post` (+ `force`: `false` = cestino, `true` = definitivo) — mentre le abilità

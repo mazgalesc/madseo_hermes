@@ -29,6 +29,43 @@ dice solo che il file non esiste.
 | 9 | Le fonti dei dati delle parole chiave (Search Console via Maton, DataForSEO, Bing) | l'autore le chiavi, l'agente la verifica | no: il metodo resta completo senza | si dichiara il buco (`parole-chiave.md` §3) |
 | 10 | **Il primo set di parole chiave** (semi, espansione, volume dove c'è) | agente, con l'autore che risponde sul posizionamento | sì, per poter pianificare | senza, il piano si costruisce a intuito |
 
+## Cosa serve **sul sito**, prima della macchina
+
+Tutto quello che sta nella tabella qui sopra è **lato macchina**. Tre cose invece nascono **sul sito**, e
+senza di loro la skill lavora a metà.
+
+**1. L'endpoint MCP non è nativo di WordPress.** Lo pubblica un **adapter MCP installato e attivo sul sito**
+(il pattern `mcp-adapter`): `https://<dominio>/wp-json/mcp/mcp-adapter-default-server`. Se quell'URL risponde
+**404**, l'adapter non c'è o il percorso è un altro — ed è un caso che la lista degli indizi **non copre**
+(quella parla di 401/403 header o credenziale, 405 metodo, 400 protocollo). Su un WordPress senza adapter
+questo passo **si salta e si dichiara**: bozze, campi SEO e blocchi passano dal REST con l'application
+password — più lento e senza abilità, ma il lavoro si fa.
+
+**2. La credenziale dell'MCP (`WP_BASIC_AUTH`) si costruisce, non si riceve.** È `Basic` + base64 di
+`utente:application-password` — **la stessa coppia** che sta nel file delle credenziali WordPress. Si legge
+con il parser (una riga = `CHIAVE=valore`, **non** con `source`: il valore contiene uno spazio e la shell lo
+tronca) e si scrive nel file di ambiente. Il valore **non si stampa** — né a video, né in chat, né in un
+rapporto:
+
+```bash
+UTENTE=$(grep -m1 '_USER='  ~/.hermes/secrets/wp-credentials.env | cut -d= -f2- | tr -d '"')
+APP=$(grep    -m1 'APP_PASSWORD=' ~/.hermes/secrets/wp-credentials.env | cut -d= -f2- | tr -d '"')
+printf 'Basic %s\n' "$(printf '%s:%s' "$UTENTE" "$APP" | base64)"   # → riga WP_BASIC_AUTH nel file di ambiente
+```
+
+**3. Il plugin SEO del sito, e le chiavi di terzi.**
+
+- Le abilità `seo/*` sono quelle del **plugin SEO del sito** (le nostre: 26). Con Rank Math o Yoast i nomi
+  cambiano: si sostituiscono **nel testo** (`configurazione.md`), non si ignorano.
+- **Search Console e Analytics**, due strade. **Maton** (gateway HTTP): serve un account sul gateway con le
+  proprietà Google collegate, la chiave va in `MATON_API_KEY`, e le connessioni attive si leggono con
+  `GET https://api.maton.ai/connections` (gratis, e dice anche cosa **non** è collegato). In alternativa le
+  **API di Google dirette** (progetto Cloud + OAuth): il metodo del lavoro non cambia, cambia il programma
+  che porta i dati.
+- **Opzionali davvero** (senza, il metodo resta completo — `parole-chiave.md` §3): DataForSEO per volume e
+  difficoltà (a consumo), Bing Webmaster per le impression (gratuito), Parallel per la ricerca approfondita,
+  Gemini per le immagini. La skill lo dichiara a ogni passo, e la prova di ognuna è gratuita.
+
 ## Passo per passo
 
 ### 1. La cartella di lavoro

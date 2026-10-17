@@ -128,7 +128,8 @@ ignorati.
    password, per la REST API.
 3. **Search Console e Analytics**: qui si usa **Maton** (gateway HTTP). Verificato l'11/10/2026: bastano
    due `curl`, nessuna skill da installare. In alternativa, le API di Google dirette.
-4. **Python 3** per gli script — solo libreria standard, nessuna dipendenza da installare.
+4. **Python 3** per gli script — solo libreria standard, nessuna dipendenza da installare — e **`sqlite3`**
+   per il database del piano (su macOS c'è di serie; se manca, si installa).
 5. **Cartella di lavoro** `~/seo-content/` con `content/`, `audits/`, `distribution/`, `shared/` e il database
    del piano editoriale (`shared/lavoro.db`, schema in `references/db-schema.md`).
 6. **Un vault Obsidian gratuito** (locale, fatto di file markdown) per le note dei contenuti: promessa,

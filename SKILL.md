@@ -7,7 +7,7 @@ metadata:
     tags: [SEO, GEO, WordPress, content, immagini, italiano]
     related_skills: [scrapling, mnemosyne-memory-override]
 prerequisites:
-  commands: [curl, npm, webcmd]
+  commands: [curl, python3, sqlite3, npm, webcmd]
 ---
 
 # SEO CONTENT — versione Hermes

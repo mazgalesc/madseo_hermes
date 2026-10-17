@@ -56,10 +56,20 @@ export PATH="$HOME/.local/node/bin:$HOME/.local/bin:$PATH"
 agy -p "$(cat /tmp/invio.md)" > rapporto-gemini.md 2>&1
 ```
 
+**Sulla rotta dell'ispezione il gateway è intermittente**: la stessa chiamata risponde in 16 secondi o
+non risponde affatto in 45, con lo stesso payload nello stesso minuto (verificato il 17/10/2026 su 47 URL).
+Quindi: `-m 60`, **due ritentativi**, e **una riga di CSV scritta appena arriva** — così un'interruzione non
+butta via le URL già interrogate. La prima chiamata della sessione può essere lenta per avvio a freddo:
+**un timeout non è una rotta sbagliata** (avevo concluso il contrario da una sola misura, e sbagliavo). E
+la rotta giusta, se si sbaglia, la dice la risposta: un 404 risponde testualmente
+*(«URL Inspection is `POST /google-search-console/v1/urlInspection/index:inspect`»)*.
+
 Il testo da leggere e da spedire si prepara convertendo l'HTML: titoli marcati (`#`, `##`, `###`),
 immagini come `[IMMAGINE: alt | src]`, link come `[testo -> url]`, entità decodificate. **Quella
 conversione è per la lettura — non è la pagina**: serve a me per leggere tutto e al valutatore per
 averlo tutto, ma **nessun difetto di formattazione si dichiara sul testo convertito** (§Trappole).
+Il secondo lettore impiega **circa due minuti** su una pagina da ~40 KB: va lanciato con un timeout
+generoso (o in background con notifica), mai dentro un timeout da un minuto.
 
 ## Le trappole della misurazione (producono difetti FALSI)
 
@@ -72,6 +82,14 @@ averlo tutto, ma **nessun difetto di formattazione si dichiara sul testo convert
 | `??` in una cella | sembra artefatto di console | leggere i **byte**: `3f 3f` = due punti interrogativi veri → il contenuto ha perso l'emoji (bandierine!) |
 | python inline con backslash nelle f-string | `SyntaxError: f-string expression part cannot include a backslash` | il python di sistema di macOS è 3.9: tenere le regex in variabili di modulo, o scrivere lo script su file invece che in heredoc |
 | "risposta corta" di un CLI | sembra una risposta scarna | controllare **la dimensione** dell'output: sotto i ~1.000 caratteri è un **errore**, non una risposta (tipico: permesso negato in headless) |
+| Lettura del corpo HTTP con lo split sulle intestazioni | «`robots.txt` è vuoto», «la sitemap non ha nessuna URL»: un **guasto del sito** che non esiste | leggere con `curl -o corpo -D testa -w '%{http_code} %{size_download}'` e **confrontare i byte dichiarati con quelli letti**: quando un risultato sembra un guasto del sito, si controprova **la lettura** prima di accusare il sito |
+
+**I numeri del plugin hanno una soglia che non dichiarano, e a volte si contraddicono da soli.** Sullo
+stesso articolo: la voce «Formato Q&A» dava valore *«0 domande»* e messaggio *«Buon uso di domande
+(8 domande)»*; «H1: 0» perché l'`<h1>` lo rende il tema e non sta nel contenuto; *«26 frasi lunghe»*
+contro la lettura che ne trova 1 (soglia più bassa, titoli inclusi). Il rilievo da mettere nel rapporto è
+**la contraddizione o la differenza di soglia**, non il numero: i conteggi del plugin sono indicatori, il
+numero da citare è quello contato leggendo.
 
 ## Contare le duplicazioni (il difetto tipico di questo sito)
 
@@ -206,7 +224,11 @@ e leggibili (riga in tabella qui sopra). Prima di scrivere "non verificabile", *
    regole già date e confrontarle con quelle successive** — è il controllo che ha trovato Gemini in
    entrambi i casi e che nessun conteggio automatico fa.
 6. **Struttura contro schema** — le FAQ sparse fuori dall'H2 mentre lo schema `FAQPage` le dichiara
-   tutte (`219`): il markup può essere valido e la pagina no.
+   tutte (`219`): il markup può essere valido e la pagina no. E i **tipi dichiarati e vuoti**: un articolo
+   che non vende niente e non ospita eventi con `Product` ed `Event` compilati a metà
+   (`product: {currency: EUR}`, `event: {status, attendance_mode}`) si segnala per il tipo inutile, non
+   solo per la copertura — è il plugin che li aggiunge, quindi la correzione è una regola per tipo di
+   articolo.
 7. **Tre intenti in conflitto** — slug ≠ H1 ≠ title (`219`: "cos'è" / "come nasce" / "come guadagnare").
 8. **E-E-A-T dell'autore** — H3 col nome dentro il corpo, ruolo "nerd", avatar predefinito, social del
    footer a `#`, nessuno screenshot reale, nessuna didascalia.
@@ -334,7 +356,10 @@ articoli collegati e non in ordine alfabetico.
 1. **Tabella di testa**: URL, date, **stato in Google**, verdetto in due righe.
 2. Il **difetto principale in evidenza**, poi gli altri in tabella con la frase esatta e il punto in cui sta.
 3. **"Le accuse che NON reggono"**: le verifiche respinte, ognuna con la prova. È la parte che dimostra
-   che il lavoro è stato fatto davvero (e vale anche per le mie imprecisioni: dichiararle).
+   che il lavoro è stato fatto davvero (e vale anche per le mie imprecisioni: dichiararle). Una citazione
+   che il secondo lettore dà per certa ma che **non si ritrova sulla pagina con la sua stessa stringa**
+   sta qui, dichiarata *da rileggere a mano*: mai nella lista dei difetti (su otto accuse verificate, due
+   citazioni non tornavano mentre la conclusione poteva comunque reggere).
 4. **Punti forti** onesti — se un articolo è buono va detto, e diventa il metro per gli altri.
 5. **Piano di correzione per priorità** (alta/media/bassa, con il tipo di intervento) e una riga
    **"da non toccare"**.

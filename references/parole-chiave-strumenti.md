@@ -217,6 +217,23 @@ shows only as a balance drop (see Pitfalls). `--sandbox` points the same call at
 `sandbox.dataforseo.com`: identical payload, fake values, **$0** — test a change there before the real
 run.
 
+`scripts/difficolta.py` — la difficoltà SEO (Keyword Difficulty 0-100) per la stessa shortlist.
+
+```bash
+python3 scripts/difficolta.py --keywords-file ~/seo-content/shared/keyword-shortlist.txt \
+  --language it --location-code 2380 --out ~/seo-content/audits/difficolta-$(date +%F).csv
+python3 scripts/difficolta.py --keywords-file ~/seo-content/shared/keyword-shortlist.txt --stima
+```
+
+Endpoint DataForSEO Labs `bulk_keyword_difficulty/live`: una task copre fino a 1.000 keyword e costa
+**$0,012 per task + $0,00012 per keyword** (55 keyword ≈ **$0,019**; listino verificato il 17/10/2026 —
+la cifra si riverifica sulla pagina prima di citarla). A differenza di `volumes.py` in coda standard, qui
+**il costo lo dichiara l'API**: lo script lo stampa e legge anche il saldo prima e dopo
+(`GET /v3/appendix/user_data`, costo 0), così la spesa è provata e non dedotta. `--stima` calcola il
+costo e **non chiama**: è il modo con cui si propone la spesa prima di farla.
+**Il KD non è un verdetto** — dice quanto sono forti i link di chi sta davanti: i tre rilievi che lo
+riguardano sono nei Pitfalls, e si leggono prima di usarlo per scartare o promuovere una candidata.
+
 ## Credentials — verify free before the first billed run
 
 Every source behind these scripts has a **free** probe. Run `scripts/check_credentials.py` whenever keys
@@ -291,6 +308,20 @@ valgono sempre:
 - **Reading the DataForSEO charge from the task payload.** In the standard queue the task's `cost`
   field is `0`; the money appears only as a balance drop. Read `GET /v3/appendix/user_data` before
   and after and report the difference — otherwise the report claims a free call.
+- **Leggere il KD come verdetto.** Il Keyword Difficulty misura la forza dei link di chi sta in prima
+  pagina, non la possibilità di arrivarci, e su **query di marchio o navigazionali legge valori falsi**:
+  verificato il 17/10/2026, una query da 60.500 ricerche/mese la cui prima pagina è il sito ufficiale del
+  marchio e la sua documentazione legge **KD 0**, e una testa definitoria dominata dalle pagine di
+  Google, AWS, IBM e Microsoft legge 15. **Dove il KD e la SERP litigano decide la SERP**
+  (`parole-chiave.md` §2): il KD ordina le candidate dentro un gruppo omogeneo, non scarta e non promuove
+  da solo.
+- **Leggere il KD assente come difficoltà zero.** Nella stessa risposta convivono KD numerici e `null`:
+  i `null` seguono la regola dei volumi — si stampa `–`, non `0`, e la keyword resta nella shortlist per
+  intento.
+- **Costruire una keyword sul marchio nudo.** Un nome di prodotto senza qualificatore è un **omonimo
+  finché non si legge la SERP del termine nudo**: un agente il cui nome da solo risponde con borse e
+  ciabatte di una casa di moda è il caso verificato. Si guarda prima la SERP del termine nudo, poi si
+  scrive la forma qualificata (`<marchio> agent`, `<marchio> ai`).
 - **Treating `40104` as bad credentials.** It means *account verification (email and/or phone) still
   pending in the DataForSEO panel*. `user_data` answering 200 proves the login and password are fine,
   so do not rotate the key or re-derive the request; production and sandbox answer the same gate.

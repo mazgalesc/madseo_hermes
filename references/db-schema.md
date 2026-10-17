@@ -70,7 +70,7 @@ alle altre; se la tabella esiste già si aggiungono con `ALTER TABLE content_cal
 `context=edit` il REST espone solo `_sito_seo_faq`, `_sito_seo_howto` e `footnotes` (verificato il
 17/10/2026). Si legge via MCP con **`meta/get-post-meta`**, e il nome del campo è
 `_<prefisso>_seo_focus_keyword`, dove il prefisso è quello del **namespace delle abilità** (`seo/*` è il nome
-generico: su questo sito il plugin si chiama `madweb-seo`, quindi la chiave è `_madweb_seo_focus_keyword`).
+generico: il plugin può chiamarsi altrimenti, e la chiave segue il suo slug: `_<slug-del-plugin>_seo_focus_keyword`).
 Interrogare il nome generico risponde `{"meta":[]}` e fa concludere «manca» su un campo che c'è.
 **`seo/get-post-seo` non la restituisce**: i suoi campi sono `title`, `description`, `seo_title`,
 `seo_description`, `og_title`, `og_description`, `og_image`, `robots`, `canonical_url`, `title_source`,

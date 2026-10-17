@@ -42,15 +42,18 @@ stato dei plugin**: lo stato vero è sul singolo plugin (`…/wp/v2/plugins/<car
 `network-active`), non sulla lista, che dà il valore per-sito (vedi «Difetti noti del sito» in `SKILL.md`).
 
 **Il namespace è un segnaposto: si risolve, non si dà per scontato.** Nel testo `seo/…` è un nome
-**generico** (vedi `configurazione.md`): sul sito vero quel gruppo si chiama `madweb-seo`, e il nome
+**generico** (vedi `configurazione.md`): sul sito vero quel gruppo si chiama `<slug-del-plugin>-seo`, e il nome
 cambia da installazione a installazione. Si scopre con `mcp-adapter-discover-abilities` — una chiamata,
-poi sta in memoria.
+poi sta in memoria. **E si risolve prima della prima chiamata della sessione, non dopo**: il nome
+generico usato com'è risponde *«Ability 'seo/get-post-seo' not found»* e, ripetuto, fa scattare la pausa
+del server descritta qui sotto nella trappola dei parametri. La sequenza giusta è: `discover-abilities`
+→ si prendono i **nomi veri** → si chiama.
 
 **E quando il nome corto esiste in più gruppi, non si indovina.** `get-settings` sta in quattro
-(`madtheme`, `madlinks`, `madweb-seo`, `madleads`): prendere il primo in ordine alfabetico vuol dire
+(`<slug>-tema`, `<slug>-link`, `<slug>-seo`, `<slug>-lead`): prendere il primo in ordine alfabetico vuol dire
 leggere le impostazioni del plugin dei contatti credendo che siano quelle SEO — e con `update-settings`,
 **scrivere nel plugin sbagliato**. Si preferisce il gruppo che contiene la parola del segnaposto (`seo`
-dentro `madweb-seo`) e, se resta ambiguo, **si lascia fallire la chiamata**: un errore visibile è molto
+dentro il namespace del plugin SEO) e, se resta ambiguo, **si lascia fallire la chiamata**: un errore visibile è molto
 meglio di una scrittura nel posto sbagliato. In `scripts/stato-sito.py` è la funzione `_risolvi()`,
 provata su questo sito il 14/10/2026.
 
@@ -117,12 +120,20 @@ Per **leggere le bozze esistenti**: `content/list-posts` con `{"status": "draft"
 finché `has_more` è falso. Chi legge la prima pagina da 100 e la chiama «totale» su un elenco di 133 sbaglia
 di un terzo.
 
-**Attenzione ai nomi dei parametri (trappola silenziosa)**: le abilità `content/*` che modificano
-un contenuto esistente usano **`id`** — `content/update-post`, `content/patch-post`,
+**Attenzione ai nomi dei parametri — e questa tabella non è una garanzia**: le abilità `content/*` che
+modificano un contenuto esistente usano **`id`** — `content/update-post`, `content/patch-post`,
 `content/delete-post` (+ `force`: `false` = cestino, `true` = definitivo) — mentre le abilità
-`gutenberg/*` e `content/get-post` usano **`post_id`**. **Sbagliare nome non produce errore**: la
-risposta torna vuota, `success` è `null` e non succede niente. Dopo ogni scrittura **rileggere** e
+`gutenberg/*` usano **`post_id`**. **Sulle scritture, sbagliare nome non produce errore**: la risposta
+torna vuota, `success` è `null` e non succede niente — quindi dopo ogni scrittura **rileggere** e
 confermare il risultato (per una cancellazione: `{"status": "trash"}`).
+**Le letture sbagliano invece in modo rumoroso**: `content/get-post` **non accetta `post_id`** e risponde
+*«post_id non è una proprietà valida di Object»* (verificato il 17/10/2026). Quindi il parametro di una
+lettura si **prova con una chiamata**, non si deduce da qui: letture e scritture non hanno lo stesso nome,
+e questa tabella invecchia.
+**E le chiamate sbagliate si pagano a rate**: dopo alcune abilità inesistenti o con parametri invalidi il
+server MCP risponde *«rejected the last 4 calls … Paused for ~60s»* e **rifiuta anche le chiamate
+giuste** per un minuto intero. Quindi mai una raffica di varianti speculative: **una chiamata di prova**,
+si legge la risposta, e solo dopo si manda il blocco di quelle confermate.
 
 ### Valori di stile del tema (tema a blocchi)
 

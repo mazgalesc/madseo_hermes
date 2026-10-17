@@ -73,7 +73,7 @@ def leggi_segreti() -> dict:
 def per_suffisso(segreti: dict, suffisso: str) -> str:
     """Il valore della prima chiave che finisce così.
 
-    I nomi delle voci cambiano da installazione a installazione (`WP_USER`, `MADWEB_WP_USER`,
+    I nomi delle voci cambiano da installazione a installazione (`WP_USER`, `<PREFISSO>_WP_USER`,
     il nome del sito…): si riconosce la chiave **dal suffisso**, non dal nome intero. Cercarle
     per nome intero fa fallire lo script su ogni installazione che le ha nominate diversamente.
     """
@@ -174,17 +174,17 @@ def _elenco(segreti: dict) -> dict:
 
 
 def _risolvi(segreti: dict, nome: str) -> str:
-    """`seo/get-site-seo-summary` -> `madweb-seo/get-site-seo-summary`.
+    """`seo/get-site-seo-summary` -> `<slug>-seo/get-site-seo-summary`.
 
     Il namespace delle abilità è **generico** nel testo della skill (`seo/*`, vedi
     `configurazione.md`) e cambia da installazione a installazione: si scopre dall'elenco invece
     di darlo per scontato. Un nome già valido passa intatto.
 
     Quando il nome corto esiste in più namespace **non si indovina**. `get-settings` sta in
-    quattro (`madtheme`, `madlinks`, `madweb-seo`, `madleads`): prendere il primo in ordine
+    quattro namespace (`<slug>-tema`, `<slug>-link`, `<slug>-seo`, `<slug>-lead`): prendere il primo in ordine
     alfabetico significa leggere le impostazioni del plugin dei contatti credendo che siano
     quelle SEO — e, con `update-settings`, **scrivere nel plugin sbagliato**. Quindi si preferisce
-    chi contiene la parola del namespace generico (`seo` dentro `madweb-seo`) e, se resta ambiguo,
+    chi contiene la parola del namespace generico (`seo` dentro `<slug>-seo`) e, se resta ambiguo,
     si restituisce il nome com'era: la chiamata fallisce in modo visibile, che è il male minore.
     """
     elenco = _elenco(segreti)

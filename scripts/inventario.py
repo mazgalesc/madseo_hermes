@@ -151,7 +151,7 @@ def _elenco(segreti: dict) -> dict:
 
 
 def _risolvi(segreti: dict, nome: str) -> str:
-    """`seo/get-post-seo` -> `madweb-seo/get-post-seo`: il namespace è **generico** nel testo
+    """`seo/get-post-seo` -> `<slug>-seo/get-post-seo`: il namespace è **generico** nel testo
     della skill e cambia da installazione a installazione. Quando il nome corto esiste in più
     namespace non si indovina (vedi `stato-sito.py`), si restituisce com'era."""
     elenco = _elenco(segreti)
@@ -185,7 +185,7 @@ def chiave_keyword(segreti: dict) -> str:
     """`_<prefisso>_seo_focus_keyword`, col prefisso letto dal namespace delle abilità.
 
     Nel testo della skill il campo è scritto col nome generico (`_sito_seo_focus_keyword`): qui il
-    prefisso si **scopre** (`madweb-seo/get-post-seo` -> `madweb`), perché interrogare il nome
+    prefisso si **scopre** (`<slug>-seo/get-post-seo` -> `<slug>`), perché interrogare il nome
     generico risponde `{"meta": []}` e fa concludere «manca» su un campo che c'è.
     """
     risolto = _risolvi(segreti, "seo/get-post-seo")

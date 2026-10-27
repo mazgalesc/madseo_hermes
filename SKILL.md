@@ -5,7 +5,7 @@ version: 2.1.0
 metadata:
   hermes:
     tags: [SEO, GEO, WordPress, content, immagini, italiano]
-    related_skills: [scrapling, mnemosyne-memory-override]
+    related_skills: [scrapling]
 prerequisites:
   commands: [curl, python3, sqlite3, npm, webcmd]
 ---
@@ -196,7 +196,7 @@ e in `~/seo-content/archivio/correzioni_articoli/00-INDICE.md` (§1-98). Quelli 
 ## Setup: cosa serve, da dove si installa, come si verifica
 
 **Spostato in `references/ambiente-setup-maton.md`**: il comando di controllo dell'ambiente, la tabella
-dei componenti (MCP, REST, Maton, Scrapling, webcmd, immagini, Mnemosyne), la configurazione di **webcmd**
+dei componenti (MCP, REST, Maton, Scrapling, webcmd, immagini), la configurazione di **webcmd**
 (daemon, profilo `sito`, chi fa gli accessi, siti disponibili oggi) e le **chiamate a Search Console e
 Analytics via Maton**. **Leggerlo prima di dire «l'ambiente non funziona» o di configurare qualcosa.**
 

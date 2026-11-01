@@ -283,10 +283,11 @@ valgono sempre:
 ## Where the tooling lives
 
 - Which web search/extract provider is configured, and which vendors have a **keyless free tier**:
-  the hermes-agent skill's `web-search-providers` reference (includes the curl probe that proves a
-  keyless provider is live before recommending it).
+  the `hermes-agent` skill (it carries the curl probe that proves a keyless provider is live before
+  recommending it). **Il nome del file interno può cambiare fra versioni**: si citano le skill, non i
+  loro reference, altrimenti il rimando invecchia da solo.
 - Finding SEO/keyword tools, agent skills and MCP servers, and judging their maturity: the
-  grounded-citations skill's `tooling-landscape-research` reference.
+  `grounded-citations` skill.
 - Source-by-source free-vs-paid table with limits: `references/free-keyword-data-sources.md`.
 
 ## Pitfalls

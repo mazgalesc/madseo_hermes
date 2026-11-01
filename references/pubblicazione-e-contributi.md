@@ -148,3 +148,17 @@ Le due copie (installata + istantanea) e il curator restano come descritto in `S
 la copia **installata**, poi si rigenera l'istantanea. Se la repo diventa il riferimento pubblico,
 l'istantanea resta comunque il posto delle versioni precedenti — **mai dentro l'albero della
 skill**, che rompe il caricamento per nome.
+
+## Due copie
+
+**Versioni precedenti del `SKILL.md`: non dentro l'albero della skill.** Una copia di `SKILL.md`
+dentro la skill crea una skill omonima e **rompe il caricamento per nome** (è successo davvero, fino
+al 01/10/2026: `skill_view` rispondeva *Ambiguous skill name*). L'istantanea sta fuori, in `~/seo-content/archivio/seo-content-istantanea/`.
+
+**Due copie, e non sono la stessa cosa.** `~/.hermes/skills/productivity/seo-content/` è la copia che
+Hermes carica **ed è quella che il curator di Hermes aggiorna da solo** (la lezione, la prova e il registro
+stanno in `~/.hermes/skills/.curator_ledger.jsonl`); `~/seo-content/archivio/seo-content-istantanea/` è un'istantanea che
+**non si aggiorna da sola** e invecchia in silenzio. Prima di modificare una regola: **confrontare le due
+copie** (`diff -rq <istantanea> <installata>`) e modificare **l'installata**; poi rigenerare l'istantanea, che
+serve come storico. **Mai copiare l'istantanea sopra l'installata senza riallinearla**, altrimenti si
+cancellano le patch che il curator ha già applicato.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Genera il calendario leggibile in ~/seo-content/shared/CALENDARIO.md
+"""Genera il calendario leggibile in ~/seo-content/shared/CALENDARIO.md — SOLA LETTURA.
 
 Dal 29/09/2026 la coda operativa è il piano dell'agenda: gli 80 titoli di
 PIANO-ARTICOLI-2026-09-23.md, in ordine di rotazione (1 articolo per categoria
@@ -10,94 +10,152 @@ Struttura del database (dal 29/09/2026):
 - `title` = il titolo **del piano** (da dove viene la voce)
 - `article_title` / `article_slug` = il titolo e lo slug **dell'articolo scritto**, letti da WordPress
 - `status`: Scheduled (in coda) → Draft (scritto, in bozza su WordPress) → Published
-"""
-import pathlib
-import os
-import sqlite3
 
-home = pathlib.Path.home()
-lavoro = pathlib.Path(os.environ.get("SEO_WORK_DIR", str(home / "seo-content")))
-db = lavoro / "shared" / "lavoro.db"
-conn = sqlite3.connect(db)
-conn.row_factory = sqlite3.Row
+Uso:
+  python3 calendario.py
+  python3 calendario.py --db ~/seo-content/shared/lavoro.db --out ~/seo-content/shared/CALENDARIO.md
+
+Legge SEO_WORK_DIR e SITE_DOMAIN dall'ambiente, poi da ~/.hermes/.env. Se il database del piano non
+c'è ancora, si ferma con un messaggio che dice cosa manca e dove sta lo schema: la procedura 0 lo crea
+(passo 2), e un traceback di sqlite3 non lo spiegherebbe.
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as _dt
+import os
+import pathlib
+import sqlite3
+import sys
+
+HOME = pathlib.Path.home()
+ENV = HOME / ".hermes" / ".env"
 CAT = {3: "WordPress", 5: "Affiliazione", 2: "Guide AI", 4: "Strumenti AI", 1: "Sito"}
 
-righe = [f"# Calendario editoriale — {os.environ.get('SITE_DOMAIN', 'il-tuo-sito.it')}", "",
-         "Coda operativa: **le voci del piano in `audits/`** (il documento più recente), in ordine di",
-         "rotazione — **1 articolo per categoria per ciclo** (WordPress, Affiliazione, Guide AI, Strumenti AI).",
-         "**Date assegnate**: due a settimana, martedì e venerdì; slittano se il materiale non è pronto.",
-         "Le voci con **Draft** sono già scritte e aspettano la revisione; quelle **Scheduled** sono da scrivere.",
-         "Lo stadio di funnel è **derivato dalla colonna «intenzione»** del piano (informativo TOFU,",
-         "problem solving/commerciale MOFU, transazionale BOFU): non è una scelta editoriale a parte.",
-         "", f"Stato del database (`{lavoro}/shared/lavoro.db`):"]
-for stato, n in conn.execute("SELECT status, COUNT(*) c FROM content_calendar GROUP BY 1 ORDER BY c DESC"):
-    righe.append(f"- **{stato}**: {n}")
 
-# --- bozze scritte e in attesa di pubblicazione ---
-righe += ["", "## Bozze in attesa di pubblicazione", "",
-          "Scritte e caricate su WordPress come **bozza** (mai pubblicate). Il titolo è quello",
-          "dell'articolo; fra parentesi il titolo della voce di piano, quando è diverso.", "",
-          "| Data | Post | Categoria | Titolo dell'articolo | Voce di piano |", "|---|---|---|---|---|"]
-for r in conn.execute("""SELECT wp_post_id, wp_category_id, article_title, article_slug, title, scheduled_date
-                          FROM content_calendar
-                         WHERE status = 'Draft' AND wp_post_id IS NOT NULL
-                         ORDER BY scheduled_date, wp_post_id"""):
-    titolo = r["article_title"] or r["title"]
-    voce = "" if (r["article_title"] is None or r["article_title"].strip() == r["title"].strip()) else f"*{r['title']}*"
-    righe.append(f"| {r['scheduled_date'] or '—'} | {r['wp_post_id']} | {CAT.get(r['wp_category_id'], '?')} | {titolo} | {voce} |")
-
-# --- coda in rotazione ---
-righe += ["", "## Coda in rotazione", "",
-          "| Data | Stadio | Categoria | Titolo del piano |", "|---|---|---|---|"]
-for i, r in enumerate(conn.execute("""SELECT funnel_stage, wp_category_id, title, scheduled_date
-                                      FROM content_calendar
-                                      WHERE status='Scheduled' ORDER BY scheduled_date, id"""), start=1):
-    righe.append(f"| {r['scheduled_date'] or '—'} | {r['funnel_stage']} | {CAT.get(r['wp_category_id'], '?')} | {r['title']} |")
-
-# --- coda di manutenzione: le pagine da rivedere (refresh_at) ---
-righe += ["", "## Coda di manutenzione (`refresh_at`)", "",
-          "**Le pagine da rivedere**: la data dice *quando* vanno riguardate (§3-bis del `SKILL.md`).",
-          "Chi è in ritardo sta in cima, e gli esiti possibili sono tre — aggiornare, consolidare, togliere —",
-          "con i criteri scritti in `references/regole-di-controllo.md`. **La manutenzione propone, non esegue.**", "",
-          "| Da rivedere il | Giorni | Categoria | Voce |", "|---|---|---|---|"]
-import datetime as _dt
-
-_oggi = _dt.date.today()
-for r in conn.execute("""SELECT funnel_stage, wp_category_id, title, refresh_at
-                           FROM content_calendar
-                          WHERE refresh_at IS NOT NULL AND refresh_at != ''
-                          ORDER BY refresh_at, id"""):
+def impostazione(nome: str, ripiego: str = "") -> str:
+    """Legge una variabile: prima l'ambiente, poi il file locale di configurazione, poi il ripiego."""
+    if os.environ.get(nome):
+        return os.environ[nome]
     try:
-        _giorni = (_dt.date.fromisoformat(r["refresh_at"]) - _oggi).days
-        quando = f"{_giorni:+d}" + (" · in ritardo" if _giorni < 0 else "")
-    except ValueError:
-        # La data va scritta ISO come `scheduled_date`: un formato ambiguo (12/10/2026) non si interpreta.
-        quando = "formato non ISO — da correggere"
-    righe.append(f"| {r['refresh_at']} | {quando} | {CAT.get(r['wp_category_id'], '?')} | {r['title']} |")
-
-# --- altre bozze (famiglia vecchia, senza voce di piano) ---
-altre = [r for r in conn.execute("""SELECT wp_post_id, wp_category_id, article_title, title
-                                    FROM content_calendar
-                                   WHERE status='Draft' AND wp_post_id IS NULL""")]
-if altre:
-    righe += ["", "## Altre bozze (famiglia precedente, non dalla coda nuova)", "",
-              "| Categoria | Titolo |", "|---|---|"]
-    for r in altre:
-        righe.append(f"| {CAT.get(r['wp_category_id'], '?')} | {r['title']} |")
+        for riga in ENV.read_text().splitlines():
+            if riga.startswith(nome + "="):
+                return riga.split("=", 1)[1].strip().strip('"').strip("'")
+    except OSError:
+        pass
+    return ripiego
 
 
-n_pub = conn.execute("SELECT COUNT(*) FROM content_calendar WHERE status='Published'").fetchone()[0]
-righe += ["", "## Articoli pubblicati",
-          "",
-          "**Non stanno in questo file, e il numero non si legge da qui**: i contenuti già pubblicati sono nel",
-          "sito, e l'elenco con le promesse sta in `INVENTARIO.md`, **rigenerato dal sito** con",
-          "`scripts/inventario.py` (`X-WP-Total`). La tabella `content_calendar` tiene solo la coda e le bozze,",
-          f"quindi il conteggio delle righe `Published` qui dentro è **{n_pub}** e non dice quanti articoli ha il sito.", "",
-          "## Controllo duplicati", "",
-          "**Regola attiva**: prima di proporre o scrivere un titolo si confronta la **promessa** — non il",
-          "titolo — con i pubblicati, le bozze e la coda. L'inventario è in `INVENTARIO.md`; il metodo in",
-          "`references/pianificazione-e-duplicati.md`.", ""]
+def righe_calendario(conn: sqlite3.Connection, db: pathlib.Path) -> list[str]:
+    """Il contenuto del calendario, nell'ordine in cui si legge il file. `db` serve solo a dichiarare
+    nel documento quale database è stato letto (con `--db` non è quello di default)."""
+    righe = [f"# Calendario editoriale — {impostazione('SITE_DOMAIN', 'il-tuo-sito.it')}", "",
+             "Coda operativa: **le voci del piano in `audits/`** (il documento più recente), in ordine di",
+             "rotazione — **1 articolo per categoria per ciclo** (WordPress, Affiliazione, Guide AI, Strumenti AI).",
+             "**Date assegnate**: due a settimana, martedì e venerdì; slittano se il materiale non è pronto.",
+             "Le voci con **Draft** sono già scritte e aspettano la revisione; quelle **Scheduled** sono da scrivere.",
+             "Lo stadio di funnel è **derivato dalla colonna «intenzione»** del piano (informativo TOFU,",
+             "problem solving/commerciale MOFU, transazionale BOFU): non è una scelta editoriale a parte.",
+             "", f"Stato del database (`{db}`):"]
+    for stato, n in conn.execute("SELECT status, COUNT(*) c FROM content_calendar GROUP BY 1 ORDER BY c DESC"):
+        righe.append(f"- **{stato}**: {n}")
 
-(lavoro / "shared" / "CALENDARIO.md").write_text("\n".join(righe))
-print(f"  scritto CALENDARIO.md ({len(righe)} righe)")
-conn.close()
+    # --- bozze scritte e in attesa di pubblicazione ---
+    righe += ["", "## Bozze in attesa di pubblicazione", "",
+              "Scritte e caricate su WordPress come **bozza** (mai pubblicate). Il titolo è quello",
+              "dell'articolo; fra parentesi il titolo della voce di piano, quando è diverso.", "",
+              "| Data | Post | Categoria | Titolo dell'articolo | Voce di piano |", "|---|---|---|---|---|"]
+    for r in conn.execute("""SELECT wp_post_id, wp_category_id, article_title, article_slug, title, scheduled_date
+                              FROM content_calendar
+                             WHERE status = 'Draft' AND wp_post_id IS NOT NULL
+                             ORDER BY scheduled_date, wp_post_id"""):
+        titolo = r["article_title"] or r["title"]
+        voce = "" if (r["article_title"] is None or r["article_title"].strip() == r["title"].strip()) else f"*{r['title']}*"
+        righe.append(f"| {r['scheduled_date'] or '—'} | {r['wp_post_id']} | {CAT.get(r['wp_category_id'], '?')} | {titolo} | {voce} |")
+
+    # --- coda in rotazione ---
+    righe += ["", "## Coda in rotazione", "",
+              "| Data | Stadio | Categoria | Titolo del piano |", "|---|---|---|---|"]
+    for r in conn.execute("""SELECT funnel_stage, wp_category_id, title, scheduled_date
+                              FROM content_calendar
+                              WHERE status='Scheduled' ORDER BY scheduled_date, id"""):
+        righe.append(f"| {r['scheduled_date'] or '—'} | {r['funnel_stage']} | {CAT.get(r['wp_category_id'], '?')} | {r['title']} |")
+
+    # --- coda di manutenzione: le pagine da rivedere (refresh_at) ---
+    righe += ["", "## Coda di manutenzione (`refresh_at`)", "",
+              "**Le pagine da rivedere**: la data dice *quando* vanno riguardate (§3-bis del `SKILL.md`).",
+              "Chi è in ritardo sta in cima, e gli esiti possibili sono tre — aggiornare, consolidare, togliere —",
+              "con i criteri scritti in `references/regole-di-controllo.md`. **La manutenzione propone, non esegue.**", "",
+              "| Da rivedere il | Giorni | Categoria | Voce |", "|---|---|---|---|"]
+    oggi = _dt.date.today()
+    for r in conn.execute("""SELECT funnel_stage, wp_category_id, title, refresh_at
+                               FROM content_calendar
+                              WHERE refresh_at IS NOT NULL AND refresh_at != ''
+                              ORDER BY refresh_at, id"""):
+        try:
+            giorni = (_dt.date.fromisoformat(r["refresh_at"]) - oggi).days
+            quando = f"{giorni:+d}" + (" · in ritardo" if giorni < 0 else "")
+        except ValueError:
+            # La data va scritta ISO come `scheduled_date`: un formato ambiguo (12/10/2026) non si interpreta.
+            quando = "formato non ISO — da correggere"
+        righe.append(f"| {r['refresh_at']} | {quando} | {CAT.get(r['wp_category_id'], '?')} | {r['title']} |")
+
+    # --- altre bozze (famiglia vecchia, senza voce di piano) ---
+    altre = [r for r in conn.execute("""SELECT wp_post_id, wp_category_id, article_title, title
+                                          FROM content_calendar
+                                         WHERE status='Draft' AND wp_post_id IS NULL""")]
+    if altre:
+        righe += ["", "## Altre bozze (famiglia precedente, non dalla coda nuova)", "",
+                  "| Categoria | Titolo |", "|---|---|"]
+        for r in altre:
+            righe.append(f"| {CAT.get(r['wp_category_id'], '?')} | {r['title']} |")
+
+    n_pub = conn.execute("SELECT COUNT(*) FROM content_calendar WHERE status='Published'").fetchone()[0]
+    righe += ["", "## Articoli pubblicati",
+              "",
+              "**Non stanno in questo file, e il numero non si legge da qui**: i contenuti già pubblicati sono nel",
+              "sito, e l'elenco con le promesse sta in `INVENTARIO.md`, **rigenerato dal sito** con",
+              "`scripts/inventario.py` (`X-WP-Total`). La tabella `content_calendar` tiene solo la coda e le bozze,",
+              f"quindi il conteggio delle righe `Published` qui dentro è **{n_pub}** e non dice quanti articoli ha il sito.", "",
+              "## Controllo duplicati", "",
+              "**Regola attiva**: prima di proporre o scrivere un titolo si confronta la **promessa** — non il",
+              "titolo — con i pubblicati, le bozze e la coda. L'inventario è in `INVENTARIO.md`; il metodo in",
+              "`references/pianificazione-e-duplicati.md`.", ""]
+    return righe
+
+
+def main() -> int:
+    lavoro = pathlib.Path(impostazione("SEO_WORK_DIR", str(HOME / "seo-content")))
+    ap = argparse.ArgumentParser(description="Genera CALENDARIO.md dal piano editoriale (sola lettura)")
+    ap.add_argument("--db", default=str(lavoro / "shared" / "lavoro.db"),
+                    help="database del piano (default: <SEO_WORK_DIR>/shared/lavoro.db)")
+    ap.add_argument("--out", default=str(lavoro / "shared" / "CALENDARIO.md"),
+                    help="file da scrivere (default: <SEO_WORK_DIR>/shared/CALENDARIO.md)")
+    args = ap.parse_args()
+
+    db, out = pathlib.Path(args.db), pathlib.Path(args.out)
+    if not db.is_file():
+        print(f"  ASSENTE: {db}\n"
+              f"  Il database del piano non c'è ancora: lo crea la procedura 0, passo 2\n"
+              f"  (schema in references/db-schema.md). Non è un errore di questo script.", file=sys.stderr)
+        return 2
+
+    try:
+        conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+        conn.row_factory = sqlite3.Row
+        righe = righe_calendario(conn, db)
+        conn.close()
+    except sqlite3.Error as e:
+        print(f"  ERRORE su {db}: {type(e).__name__} — {e}\n"
+              f"  Se dice «database is locked», non si cancella il file per sbloccarlo:\n"
+              f"  le note di esercizio sono in references/db-schema.md.", file=sys.stderr)
+        return 1
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("\n".join(righe))
+    print(f"  scritto {out} ({len(righe)} righe)")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -56,7 +56,7 @@ Exact numbers.
 | DataForSEO | per-request (SERP, keyword volume, difficulty, backlinks) | **$0,06 per standard task / $0,09 per live task, and one task carries up to 1.000 keywords** — batch the whole shortlist into a single call; SERP ~$0.0006–0.0012 per SERP by queue | verified live: 980 keywords = **$0,06**, balance $1,00 → $0,94. The task payload's `cost` reads `0` in the standard queue — read the charge from `GET /v3/appendix/user_data` before/after. `40104` = account verification (email/phone) still pending, **not** bad credentials. $1 trial credit + unlimited Sandbox |
 | Serper | per-request Google SERP | ~$1 per 1,000 at entry, falling with volume | free credits are one-time, **not** a monthly reset |
 | Scrapfly / Scrape.do / Searlo | SERP + scrape credits | free starter credits (1,000–3,000) | credit-based, some without expiry |
-| Parallel | per-request search/extract/monitor | search & extract at the low end ($1–5 per 1,000) | keyless anonymous tier exists — see hermes-agent → references/web-search-providers.md |
+| Parallel | per-request search/extract/monitor | search & extract at the low end ($1–5 per 1,000) | keyless anonymous tier exists — see the `hermes-agent` skill |
 
 ## Open source that builds on those APIs
 
@@ -122,8 +122,7 @@ Verified live from this machine: the two autocomplete endpoints, the Bing WMT `G
 endpoint (weekly rows, HTTP 200), and one full DataForSEO volume task (980 keywords, $0,06 charged).
 Quoted from vendor pages: Bing WMT Keyword Research, the Microsoft Advertising Keyword Planner /
 Ad Insight API, Ahrefs Free, Open PageRank, Google Custom Search, Currents, the Google Trends alpha,
-Moz's free cap, and the search-API free tiers (see grounded-citations →
-`references/tooling-landscape-research.md`). Secondary sources (named inline): tier limits for
+Moz's free cap, and the search-API free tiers (see the `grounded-citations` skill). Secondary sources (named inline): tier limits for
 Semrush, KWFinder, AnswerThePublic, Ubersuggest, WordStream, Serper's one-time credits, and the
 Keyword Planner range behaviour. Verified 2026-10-14 against DataForSEO's own pricing pages: the $0,06 standard / $0,09 live
 price for a Keywords Data task (up to 1.000 keywords) and the Labs task+item model — see the

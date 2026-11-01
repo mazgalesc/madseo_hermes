@@ -56,7 +56,7 @@ prima, ed è quello che in un audit di 45 articoli e 15 bozze ha fatto la differ
 SKILL.md                      il banco di lavoro: le due regole ⛔, la configurazione,
                               il metodo, le 13 procedure (dalla 0 alla 12)
 README.md                     questo file
-references/                   35 file, uno per argomento (indice completo in
+references/                   40 file, uno per argomento (indice completo in
                               references/indice-file.md)
   pianificazione-e-duplicati.md   inventario, promesse, cannibalizzazione
   parole-chiave.md                quali keyword scegliere e perché
@@ -68,6 +68,8 @@ references/                   35 file, uno per argomento (indice completo in
   audit-contenuti-pubblicati.md   come si verifica un articolo pubblicato
   audit-bozze.md                  come si verifica una bozza
   trappole.md                     tutte le trappole verificate in un file solo
+  difetti-sito.md                 i difetti del sito, con la data e il numero misurato
+  verifica-scritture.md           come si verifica una modifica SEO (casi verificati)
   ambiente-setup-maton.md         ambiente, webcmd, Search Console e Analytics
   abilita-mcp.md                  le abilità del sito e lo stile del tema
   indice-file.md                  l'elenco completo dei file e quanto pesa ognuno

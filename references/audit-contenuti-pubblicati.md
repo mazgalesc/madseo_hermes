@@ -78,7 +78,7 @@ generoso (o in background con notifica), mai dentro un timeout da un minuto.
 | Conversione tag → newline | tabelle "incollate", FAQ "muro di testo", H3 "vuoto", H1 "duplicato", menu "duplicato", data "senza spazio" | guardare l'HTML: `<td>` separati; FAQ in `<dt>/<dd>`; l'H1 è uno (la seconda stringa è il **breadcrumb**); i due menu sono **desktop + mobile** (le classi lo dicono); la data è in **due blocchi** distinti |
 | Entità non decodificate | title/description "troppo lunghi" (`&#8217;` conta 7 caratteri) | `unescape()` **prima** di contare: un title "da 72" era da 60 |
 | Attributi con apici **singoli** | "immagine senza src né alt", "noindex assente" | pattern `["']…["']` (`src='…'`, `alt='…'`, `name='robots'`): nel sito convivono entrambi gli stili |
-| HTML tutto su una riga | `grep -c` conta le **righe**, non le occorrenze ("1 cella" in una tabella da 121) | `grep -o … | wc -l` |
+| HTML tutto su una riga | `grep -c` conta le **righe**, non le occorrenze ("1 cella" in una tabella da 121) | `grep -o …` + `wc -l` (la barra verticale dentro una cella spezza la tabella) |
 | `??` in una cella | sembra artefatto di console | leggere i **byte**: `3f 3f` = due punti interrogativi veri → il contenuto ha perso l'emoji (bandierine!) |
 | python inline con backslash nelle f-string | `SyntaxError: f-string expression part cannot include a backslash` | il python di sistema di macOS è 3.9: tenere le regex in variabili di modulo, o scrivere lo script su file invece che in heredoc |
 | "risposta corta" di un CLI | sembra una risposta scarna | controllare **la dimensione** dell'output: sotto i ~1.000 caratteri è un **errore**, non una risposta (tipico: permesso negato in headless) |

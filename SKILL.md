@@ -1,13 +1,12 @@
 ---
 name: seo-content
-description: Use when producing verifiable SEO content for a WordPress site (research, keywords, writing, audits, publishing).
-version: 2.1.0
+description: "Write, audit and plan verifiable SEO content for WordPress."
+version: 2.2.0
 metadata:
   hermes:
     tags: [SEO, GEO, WordPress, content, immagini, italiano]
-    related_skills: [scrapling]
 prerequisites:
-  commands: [curl, python3, sqlite3, npm, webcmd]
+  commands: [curl, python3, sqlite3]
 ---
 
 # SEO CONTENT — versione Hermes
@@ -91,6 +90,27 @@ esempio e vanno adattati prima di usare la skill.
 | `calendario.py` | genera `CALENDARIO.md` dal piano editoriale: coda, bozze, e la **coda di manutenzione** (`refresh_at`) | dopo ogni modifica al database del piano |
 | `genera-immagine.py`, `genera-infografica.py` | copertine e infografiche con la chiave immagini (**opzionale**) | solo se la chiave c'è; altrimenti si dichiara e si fa a mano |
 
+## Skill sorelle richieste (verifica prima di dire «non funziona»)
+
+La ricerca si appoggia ad altre skill di Hermes. **Nel metodo non sono opzionali, ma nello strumento sono
+sostituibili**: se una manca si dichiara e si usa il ripiego, non si inventa la fonte.
+
+| Skill | A cosa serve qui | Se manca |
+|---|---|---|
+| `duckduckgo-search` | `ddgs text -q "…" -m 10 -r it-it` per le SERP | `web_search` / `web_extract` di Hermes |
+| `reddit-reading` | feed pubblici di Reddit (1 richiesta al minuto, nessuna credenziale) | Reddit via `webcmd`; altrimenti il buco si dichiara |
+| `blocked-page-recovery` | pagina che risponde 403/429, paywall, muro anti-bot | Scrapling in `~/seo-content/.venv` |
+| `scrapling` | scraping stealth (~22 s per pagina) quando serve davvero | quel passaggio salta, e si dice |
+| `obsidian` | le note dei contenuti nel vault | si scrive in `~/seo-content/`, senza grafo |
+
+**`webcmd`** non è una skill ma un programma: serve per i siti che chiedono l'accesso (Reddit completo, X,
+Quora, SERP Google) e **le sue istruzioni stanno in `references/ambiente-setup-maton.md`**. Senza, la ricerca
+si ferma a quello che si legge senza login.
+
+**Prima di prescrivere un'installazione si guarda cosa c'è già** (regola ⛔ qui sopra): `skills_list` e
+`skill_view(name=…)` dicono subito se la skill c'è. Una skill sorella assente **non si installa da sola**: si
+chiede all'autore.
+
 ## Dove stanno le cose
 
 | Cosa | Dove |
@@ -106,74 +126,23 @@ esempio e vanno adattati prima di usare la skill.
 ## Mappa dei file — dove sta cosa
 
 **L'elenco completo dei file di `references/`, con il peso e lo stato di ognuno, è in
-`references/indice-file.md`** (36 file). Qui resta la regola: se cerchi una regola e non è in questo file,
+`references/indice-file.md`** (40 file). Qui resta la regola: se cerchi una regola e non è in questo file,
 è in uno di quelli; il metodo sta qui, i cataloghi stanno nei reference.
 
 ## Difetti noti del sito (verificati, da non riscoprire)
 
-**1. `missing_alt` — corretto in `plugin-seo` 3.0.31 (19/09/2026); l'11/10/2026 la versione attiva è la 3.0.34** — si legge con `curl -u … 'https://il-tuo-sito.it/wp-json/wp/v2/plugins?context=edit'`, che dà nome e `version` (il tema a blocchi è nella stessa risposta) — **ma non fidarsi del suo `status`**: quella lista riporta lo stato **per-sito**, quindi su un multisite un plugin attivo a livello di **rete** lì compare `inactive`. Lo stato vero è sul singolo plugin, `…/wp/v2/plugins/<cartella>/<slug>` → `network-active`, ed è quello che si legge. **Mai dichiarare «disattivato per sbaglio» guardando solo la lista** (verificato il 13/10/2026: tre plugin riferiti come spenti erano attivi a livello di rete, e su quella lettura sbagliata è stato programmato un intervento inutile).
-Il controllo era
-`preg_match('/<img[^>]+(?!alt=)[^>]*>/i', …)`: il lookahead negativo viene valutato dopo che `[^>]+`
-ha già consumato il tag, quindi combaciava con **qualsiasi** `<img>` — 31 contenuti segnalati a
-fronte di 5 immagini davvero senza alt. Ora tutto passa da
-`sito_seo_count_images_without_alt()` in `includes/common/helpers.php`, che esamina **ogni** tag
-`<img>` (attributo assente o vuoto = mancante, `data-alt` non conta, ignora `>` dentro un attributo
-quotato). Stessa funzione usata dal pannello e dall'elenco articoli, che prima contavano al
-contrario (solo `alt=""`). Test: `php scripts/test-alt-check.php` (35 controlli).
-Correzione giusta: `'/<img(?![^>]*\balt=)[^>]*>/i'`.
+**L'elenco completo è in `references/difetti-sito.md`** (estratto da qui il 01/11/2026, contenuto invariato):
+i difetti che sono costati tempo, ognuno con la data della verifica e il numero misurato. **È un rapporto
+d'audit, non una regola: si legge prima di proporre un intervento, e i numeri si rifanno, non si ereditano.**
 
-**Il conteggio si rifà, non si eredita.** Al **11/10/2026**, sui **45 articoli pubblicati** contati con
-`scripts/controlla-articolo.py`: **134 immagini, 0 senza alt** (il caso del `585` è chiuso), più **2
-immagini nelle 8 pagine**. Due avvertenze: lo script legge `alt` con **apici singoli e doppi** (un
-controllo scritto a mano che accetta solo i doppi trova falsi «senza alt»), e il numero delle **pagine
-renderizzate** (logo, avatar, template) è più alto e non confrontabile con quello del contenuto — il
-19/09/2026 erano 168.
+Le tre regole che restano qui, perché valgono anche senza aprire il file:
 
-**2. Il link automatico del glossario riscrive anche dentro i tag.** In
-`tema-blocks/inc/glossary/class-tema-compagnon-glossary-autolink.php` (righe 161-167) i
-segmenti protetti sono link, script, style, pre/code e titoli: **manca la protezione dei tag
-stessi**, quindi un termine del glossario che compare in un attributo (`src`, `alt`) viene
-sostituito con `<a class="mw-glossary-term">` **dentro l'attributo**. Effetto: immagine rotta o alt
-distrutto nella pagina pubblica. Il contenuto nel database resta integro: è un danno di resa.
-Verificato il 19/09/2026 su 2 pagine (215: `src` rotto, immagine non visibile; 224: `alt` rotto).
-**Corretto e verificato l'11/10/2026**: sui due contenuti i link del glossario non compaiono più dentro
-`src`/`alt` (0 casi) e i termini evidenziati funzionano ancora (14 e 27). Il rischio resta se il plugin
-viene aggiornato senza riportare la protezione dei tag.
-Rischio alto: **66 file della libreria hanno un termine del glossario nel nome** (epc, backup,
-hosting, cache, plugin, affiliazione, Gutenberg...). Correzione: aggiungere `'<[^>]+>'` all'array
-`$protected` (in coda, dopo il pattern dei link). Quando è corretto, non serve toccare i contenuti.
+- **lo stato di un plugin si legge sul plugin** (`…/wp/v2/plugins/<cartella>/<slug>` → `network-active`), non
+  nella lista, che dà il valore **per-sito**: su un multisite un plugin attivo di rete lì compare `inactive`;
+- **la home che risponde 200 non è la prova che il sito stia in piedi**: dopo un'attivazione si controlla la
+  home **più un articolo pubblicato vero**, con un parametro di cache-busting;
+- **un numero già contato non si eredita**: si riconta con lo strumento e si cita la data.
 
-**3. I difetti di SITO trovati nell'audit dell'11/10/2026 (45 articoli + 15 bozze) — si correggono UNA
-volta, non su 45 pagine.** L'elenco completo con i casi e i numeri è in `~/seo-content/archivio/rapporto-difetti-audit.md`
-e in `~/seo-content/archivio/correzioni_articoli/00-INDICE.md` (§1-98). Quelli che sono di sito, non di articolo:
-
-- **`HowTo` nello schema di molti articoli del lotto di fine settembre** (verificato l'11/10/2026: presente
-  in `1952`, `1967`, `204`; **assente** in `1854` e `1883`): funzionalità ritirata da Google nel 2023 (e il
-  sito lo spiega da sé nel `1529`). Da togliere **dove c'è, uno per uno** — non «su tutti»: il tipo
-  principale va uniformato su **`BlogPosting`** (all'11/10/2026 usano ancora `Article` il `1854` e il `1883`;
-  il `1952` è già a posto).
-- **`FAQPage` su tutti**: i rich result FAQ sono ritirati dal **7 maggio 2026** — il markup resta valido,
-  ma non promette più niente in SERP.
-- **La dichiarazione di affiliazione non esiste su nessuna pagina**, mentre quattro articoli la insegnano
-  (`1593`, `1603`, `1900`, `1962`) e Amazon ne impone una formula propria. È il difetto più costoso.
-- **`nofollow` sulle fonti autorevoli**: incoerente fra articoli (`226`/`227` ce l'hanno, `1412` no). Le
-  fonti si linkano normali; `nofollow`/`sponsored` solo per i link commerciali.
-- **Duplicazione riquadro + primo paragrafo**: **352 riquadri** sul sito, **29 con ripetizione**
-  (`204` 9, `206` 7, `202` 5, `203` 4). Dal `209` in poi zero: `213` dimostra che si può fare bene.
-- **Etichette di tema non tradotte**: «Updated on» sotto la data italiana, «Table of contents».
-- **Campi dello schema a video**: `PT2H`/`PT10M` nei blocchi HowTo (`222`, `1412`, `1441`) — si corregge
-  nel template.
-- **Cannibalizzazione**: `204`/`212` sullo stesso tema (il `212` linka il `204` 7 volte ed è mai
-  scansionato); cinque articoli di affiliazione che si linkano in cerchio; **quattro pagine orfane**
-  (`224`, `1441`, `1412`, `1452`).
-- **Identità del sito**: autore anonimo (uno pseudonimo, senza credenziali dichiarate), Gravatar predefinito, social del
-  footer a `href="#"`, commenti = solo auto-pingback. E il `217` — l'articolo più accurato del sito,
-  dieci affermazioni verificabili tutte esatte — **è stato scartato da Google**: il problema è di dominio,
-  non di singolo articolo.
-
-*Indirizzi*
-- **piatti** come il resto del sito: `https://il-tuo-sito.it/slug-dell-articolo/` — niente prefissi
-  gerarchici tipo `/seo/…`.
 
 ## Cosa usare per cosa
 
@@ -185,7 +154,7 @@ e in `~/seo-content/archivio/correzioni_articoli/00-INDICE.md` (§1-98). Quelli 
 | **Impression Bing** — opzionale, gratuito | `BING_WEBMASTER_API_KEY` + **`scripts/bing.py`** |
 | Ricerca: le query che la gente digita | **`scripts/suggest.py`** (Google + Bing, senza chiavi): gestisce da sé la trappola dell'endpoint, cioè la **decodifica** — la risposta non è sempre UTF-8 valido e la lettura rigida si interrompe o rende gli accenti storti. A mano: `suggestqueries.google.com/complete/search?client=chrome&hl=it&gl=it&q=…` |
 | Ricerca: SERP e pagine | `web_search` / `web_extract` + skill **`duckduckgo-search`** (`ddgs text -q "…" -m 10 -r it-it`); se una pagina blocca, skill `blocked-page-recovery` |
-| Ricerca: Reddit | skill **`reddit-reading`** (`scripts/reddit.py search|sub|thread|user|doctor`) — feed pubblici, 1 richiesta al minuto, nessuna credenziale |
+| Ricerca: Reddit | skill **`reddit-reading`** (`scripts/reddit.py search / sub / thread / user / doctor`) — feed pubblici, 1 richiesta al minuto, nessuna credenziale |
 | Ricerca: siti che richiedono l'accesso (Reddit completo, LinkedIn, X, Quora, SERP Google) | **`webcmd`** col profilo `sito` — configurazione e accessi in `references/ambiente-setup-maton.md`. Sola lettura, poche pagine per volta |
 | Ricerca: tecnica WordPress | **Stack Exchange** sezione `wordpress`, **API di WordPress.org** (`curl --globoff`), feed del **forum italiano** (`it.wordpress.org/support/feed/`), **GitHub**, **Hacker News** |
 | Ricerca: scraping quando serve davvero | **Scrapling** in `~/seo-content/.venv` + skill `scrapling` (stealth, ~22 s per pagina) |
@@ -217,120 +186,27 @@ ricette dei pattern. **Leggerlo prima di comporre o modificare un contenuto a bl
 
 ## Come si verificano davvero le modifiche SEO (imparato sul campo)
 
-**Lo schema va confrontato col contenuto visibile — ma sulla SOSTANZA, non sulle stringhe.** FAQ e HowTo
-sono validi solo se descrivono roba che si vede in pagina. Cercare le stringhe dei passi come testi
-letterali **dà falsi allarmi**, perché la pagina dice la stessa cosa con altre parole: verificato il
-24/09/2026, i nomi dei passi HowTo di 211 e 212 compaiono **solo dentro il JSON-LD** (posizione nel
-sorgente dentro gli intervalli `<script type="application/ld+json">`), e però in entrambe le pagine
-esiste la **procedura equivalente, visibile e numerata** (211: l'elenco di `Come provare un tema senza
-rischi`; 212: l'elenco di `Le 5 cose da controllare prima di comprare un hosting`). Quindi i due HowTo
-sono legittimi.
+**L'elenco dei casi verificati è in `references/verifica-scritture.md`** (estratto da qui il 01/11/2026,
+contenuto invariato): schema confrontato con la sostanza della pagina, HowTo equivalenti scritti con altre
+parole, FAQ in `<dt class="seo-faq__question">`, e i casi del 24/09 e del 14/10.
 
-Procedura giusta, in due passi: (1) ricerca posizionale dei testi nel sorgente, dentro/fuori gli script
-JSON-LD; (2) **lettura del contenuto salvato** per trovare la procedura equivalente nel corpo. Si dichiara
-il problema **solo se la procedura in pagina non c'è affatto**. Le FAQ invece si controllano in
-`<dt class="seo-faq__question">` — attenzione, gli accenti sono in entità HTML: cercare «è» senza
-entità le fa sembrare assenti.
-
-**Casi reali dalla stessa verifica:** 208 ha due `HowToTool` chiamati letteralmente `"Array"` (campo meta
-`tools` rotto, quello è un difetto vero); 211 ha il titolo dello HowTo più ampio della sezione visibile e
-un quarto passo che nel testo non esiste; 212 ha i 5 passi che corrispondono uno a uno all'elenco visibile.
-Le abilità di lettura del plugin **non sempre dicono la verità**: la verifica vera è l'HTML pubblico.
-
-**E le abilità di SCRITTURA non dicono cosa hanno fatto.** Una scrittura risponde `{"success": true}`
-anche quando ha **ignorato in silenzio** un campo che non conosce: la busta del successo non è la prova che
-il campo è stato scritto. Verificato il 14/10/2026 — `seo/update-post-seo` chiamato con un `focus_keyword` in
-più ha risposto `success: true` elencando in `updated` **solo** titolo e descrizione, e la keyword è rimasta
-vuota. Su un controllo che la §4 dichiara **bloccante** (la keyword), l'esito era «superato» senza esserlo.
-Quindi: **dopo ogni scrittura si rilegge il campo che si voleva cambiare**, e se è immutato la scrittura non
-è avvenuta.
-
-**Prima di comporre un payload, si chiedono i campi veri dell'abilità** con
-`mcp-adapter-get-ability-info`. `mcp-adapter-discover-abilities` elenca nome, etichetta e descrizione, e per
-un certo numero di voci **non porta affatto** lo schema dei parametri: «il campo non compare nell'elenco» non
-vuol dire «il campo non esiste», e «la chiamata è riuscita» non vuol dire «il campo è stato scritto». Le due
-domande si fanno all'endpoint, non alla memoria.
-
-- **`missing_meta` vuole titolo *e* description**: il controllo (`seo-abilities.php`) segnala il
-  problema se manca anche **solo** `_sito_seo_title`. Scrivere solo la description non fa
-  scendere il conteggio.
-- **`get-post-seo` non legge la description personalizzata**: restituisce un estratto del contenuto
-  con ellissi anche quando `_sito_seo_description` è valorizzata. **Non fidarsi di quel campo:**
-  verificare con
-  `curl -s https://il-tuo-sito.it/<slug>/ | grep -o '<meta name="description"[^>]*>'`
-  (o con `meta/get-post-meta` su `_sito_seo_description`, che è la fonte vera).
-- **Il tag robots usa virgolette singole** nell'HTML di questo sito:
-  `<meta name='robots' content='max-image-preview:large, noindex' />`. Cercarlo con virgolette
-  doppie fa credere che non ci sia (successo davvero).
-- **`noindex` sull'HTML**: si scrive `meta/update-post-meta` con
-  `{"_sito_seo_robots": {"noindex": true, "nofollow": false}}`; il plugin lo applica tramite
-  il filtro di WordPress `wp_robots`. Il contatore `noindex_posts` del riepilogo resta però a **0**
-  per un difetto del plugin (cerca un formato JSON mentre l'editor salva un array PHP): **non usarlo
-  per verificare**, guardare l'HTML.
-- **Keyword obiettivo**: campo meta `_sito_seo_focus_keyword` (verificato nel sorgente del plugin),
-  si scrive con `meta/update-post-meta`. `update-post-seo` **non** ha quel campo.
-- **I link rotti si riscansionano da soli** alla prima lettura di `get-broken-links` dopo la
-  modifica, quindi il conteggio si aggiorna senza comandi di riscansione.
-- **La home (`https://il-tuo-sito.it/`) viene segnalata come link rotto** ma risponde 200: è un falso
-  positivo del controllo (non riesce a mapparla a un articolo). Non toccarla.
-- **Modificare i link dentro un articolo**: leggere il contenuto con `get-post-blocks`, salvare una
-  copia in `~/seo-content/audits/backup-articoli/`, fare la sostituzione esatta sull'HTML degli anchor,
-  riscrivere con `gutenberg/update-post-blocks` passando `content`, poi **rileggere e validare**.
-  WordPress conserva le revisioni (`content/list-revisions`, `restore-revision`) come rete di
-  sicurezza.
+La regola che le tiene tutte resta qui: **la busta del successo non è la prova che il campo è stato scritto.**
+Un `{"success": true}` arriva anche quando un campo è stato ignorato in silenzio, quindi **dopo ogni scrittura
+si rilegge il campo che si voleva cambiare**, e i nomi dei parametri si chiedono a
+`mcp-adapter-get-ability-info`, non alla memoria.
 
 ## Schema: quale scegliere, articolo per articolo
 
-**Decidere lo schema fa parte della scrittura dell'articolo, non è un passaggio a parte.** Si imposta
-con `seo/update-schema-data`, che ha **14 campi** (i nomi veri, come li restituisce
-`mcp-adapter-get-ability-info`): `post_id`, `schema_type`, `speakable`, `faq`, `howto`, `video`,
-`product`, `job`, `event`, `course`, `recipe`, `robots`, `canonical_override`, `breadcrumb_label`.
+**Tipo per tipo, con i campi veri dell'abilità (`seo/update-schema-data`, 14 campi) e i valori ammessi:
+`references/schema-google-support.md`**, insieme a cosa Google supporta davvero e alle funzionalità ritirate
+(FAQ dal 7 maggio 2026, HowTo dal 2023).
 
-Valori ammessi per `schema_type`: `''` (usa il default del sito), `Article`, `BlogPosting`,
-`NewsArticle`, `TechArticle`, `ScholarlyArticle`, `Report`, `WebPage`, `Product`, `JobPosting`,
-`Event`, `Course`, `Recipe`, `LocalBusiness`.
+Le regole che restano qui: **gli articoli di questo sito sono `BlogPosting`** (verificato il 17/10/2026 su 10
+su 10) e si rilegge dopo la scrittura · **FAQ e HowTo non sono tipi, sono blocchi**, e si mettono solo se il
+contenuto si vede davvero in pagina · **nei blocchi `howto` i campi che non servono si lasciano fuori**: un
+HowTo salvato senza dire niente sui costi resta con `cost_currency: "USD"` (verificato il 17/10/2026 su 1441 e
+1479) · dopo la scrittura si rilegge con `seo/get-schema-data`.
 
-**`FAQ` e `HowTo` non sono tipi**: sono blocchi che si aggiungono al tipo. Si mettono **solo se il
-contenuto si vede davvero nella pagina** (regola di Google): la FAQ per una sezione di domande e
-risposte, lo HowTo per una procedura numerata passo passo.
-
-| Tipo di articolo | `schema_type` | Blocchi aggiuntivi |
-|---|---|---|
-| Articolo di blog o guida (il caso normale) | `BlogPosting` | — |
-| Pagina lunga di approfondimento che non è un post di blog | `Article` | — |
-| Guida molto tecnica, per chi già conosce l'argomento | `TechArticle` | — |
-| Articolo con sezione domande e risposte | `BlogPosting` | **FAQ** (una voce per domanda) |
-| Procedura passo passo ("come installare…", "come migrare…") | `BlogPosting` | **HowTo** (con i passi reali) |
-| Confronto o recensione di uno strumento/prodotto | `BlogPosting` | `product` se riguarda un prodotto specifico |
-| Contenuto con video incorporato | `BlogPosting` | **video** |
-| Pagina di servizio (contatti, documentazione) | `WebPage` | — |
-
-**Aggiornamento 2026 — FAQ e HowTo non danno più risultati arricchiti (verificato il 19/09/2026):**
-Google ha ritirato i risultati delle **FAQ il 7 maggio 2026** (dopo averli già limitati nel 2023 ai siti
-governativi e sanitari) e delle **HowTo** già nel 2023. Dal giugno 2026 il Rich Results Test non
-supporta più le FAQ e il rapporto dedicato è stato tolto da Search Console. **Il markup resta valido**
-(non genera errori, non è una violazione, Google continua a leggerlo per capire la pagina) ma **non
-promettere risultati visibili**: nell'articolo si dichiara FAQ/HowTo per far capire la pagina alle
-macchine e alle risposte AI, non per il menu a tendina. Fonte:
-`https://developers.google.com/search/updates` (voce del 7 maggio 2026).
-Chi vuole un risultato visibile investe su Article, Product e recensioni, Event, LocalBusiness,
-Breadcrumb, Video: quelli ci sono ancora.
-
-**Regole pratiche**
-- **gli articoli di questo sito sono `BlogPosting`**: è il sottotipo di `Article` previsto per un post di
-  blog, ed è quello che il sito usa — verificato il 17/10/2026 su **10 articoli su 10** (pubblicati e bozze).
-  Il valore `''` lascia il default del sito: si scrive `BlogPosting`, e **si rilegge** per confermarlo
-- **se l'articolo contiene una FAQ, lo schema FAQ va messo** (verificarlo sul contenuto o con
-  `seo/get-schema-data`, non sulla pagina resa di una bozza)
-- lo schema deve **descrivere quello che si vede**: niente FAQ o HowTo su contenuti che non li hanno
-- **nei blocchi `howto` i campi che non servono si lasciano fuori, non si riempiono con un default.** Un
-  HowTo salvato senza dire niente sui costi resta con **`cost_currency: "USD"`**: verificato il 17/10/2026, gli
-  articoli **1441** e **1479** hanno il blocco con `total_time: ""`, `estimated_cost: ""` e
-  **`cost_currency: "USD"`**, mentre il **224** — dove i campi sono stati riempiti — è in **`EUR`**
-  (`total_time: "PT4H"`). Quindi il dollaro è il default che resta quando non si sceglie niente. Se il
-  contenuto non parla di costi, i campi di costo non si mandano; e dopo la scrittura si rilegge il blocco
-- i breadcrumb sono disattivati sul sito e Local Business non è configurato: non impostarli per ora
-- dopo la scrittura, **rileggere** con `seo/get-schema-data` per confermare
 
 ## Il giro completo di un articolo, passo per passo (verificato)
 
@@ -435,46 +311,29 @@ Le prime due delle altre vivono nei reference: qui resta il puntatore.
 
 ### 0. Primo avvio: la configurazione (`setup`)
 
-Serve a far combaciare i **nomi generici** del testo con la **installazione vera** (`references/configurazione.md`).
-Si fa una volta, e si rifà solo quando cambia qualcosa (dominio, percorsi, server).
+**Serve a far combaciare i nomi generici del testo con l'installazione vera** (`references/configurazione.md`).
+Si fa una volta sola, e si rifà solo se cambia qualcosa (dominio, percorsi, server). **Il passo per passo —
+comandi, indizi sugli errori, controllo finale, modello di `CONFIGURAZIONE.md` — è in
+`references/primo-avvio.md`**: qui resta la sequenza.
 
-1. **La cartella di lavoro.** Si sceglie (proposta: `~/seo-content/`) e si crea con `content/`, `audits/`,
-   `distribution/`, `shared/`, `archivio/`.
-2. **Il database del piano**: `shared/lavoro.db` con la tabella `content_calendar` (schema in
-   `references/db-schema.md`).
-3. **Le credenziali — le fa l'autore, mai in chat**: application password di WordPress in un file con
-   permessi 600 (`~/.hermes/secrets/wp-credentials.env`) e la credenziale per l'MCP del sito in
-   `~/.hermes/.env`. Il file è un **`.env`, non uno script**: si legge riga per riga (`CHIAVE=valore`),
-   **non si fa `source`** — un valore con spazi interrompe la shell e i comandi che seguono partono con la
-   credenziale vuota, che si presenta come un 401/403 dell'API invece che come un errore di shell.
-4. **Il server MCP in Hermes**:
-   `hermes config set mcp_servers '{sito: {url: "https://<dominio>/wp-json/mcp/mcp-adapter-default-server", headers: {Authorization: "${WP_BASIC_AUTH}"}}}'`
-   — l'header dipende dal server: **si prova `Authorization` e poi `Auth`** e si tiene quello che risponde.
-   Caso vero: **con `Auth` il sito risponde 401, con `Authorization` 200** — l'header giusto è quello che risponde, non quello che sembra giusto. Un **405** significa credenziali accettate e metodo sbagliato per l'handshake.
-   Se lo si prova **a mano con curl** (cosa che gli script non fanno): dopo l'`initialize` servono la notifica
-   `notifications/initialized` e, su ogni richiesta successiva, l'header **`MCP-Protocol-Version: 2025-06-18`**,
-   altrimenti `tools/list` risponde «Invalid Request: MCP-Protocol-Version header is required». **Il modo
-   giusto resta lo strumento di Hermes** (`mcp-adapter-*`), non curl.
-5. **Il vault delle note**: percorso in `OBSIDIAN_VAULT_PATH` (`~/.hermes/.env`); cartelle e convenzioni
-   in `references/vault-obsidian.md`.
-6. **Le variabili degli script** in `~/.hermes/.env`: `SEO_WORK_DIR`, `SITE_DOMAIN`, `SITE_MCP_URL`,
-   `WP_CREDENTIALS`, `GA4_PROPERTY_ID` (tabella in `references/configurazione.md`).
-7. **Il file `CONFIGURAZIONE.md`** nella cartella di lavoro: la mappa fra i nomi generici del testo e i
-   valori veri di questa installazione.
-8. **La prova**: il controllo dell'ambiente in `references/ambiente-setup-maton.md` deve dire OK su MCP,
-   REST, Search Console e Analytics. Quello che manca si **dichiara** — immagini, Scrapling e `ddgs` sono
-   **opzionali** e hanno il loro ripiego.
-9. **I dati delle parole chiave**: si prova **gratis** che le chiavi rispondano
-   (`scripts/check_credentials.py`) e si prepara **il primo set** — Search Console, poi i semi, poi i
-   suggerimenti, poi il volume dove c'è (`references/parole-chiave-strumenti.md`) — scritto in
-   `shared/keywords/` con il suo indice. Le keyword scelte entrano nel piano: senza questo passo il piano
-   si costruisce a intuito.
+1. **cartella di lavoro** `~/seo-content/` con `content/`, `audits/`, `distribution/`, `shared/`, `archivio/`
+2. **database del piano** `shared/lavoro.db`, tabella `content_calendar` (17 colonne, `references/db-schema.md`)
+3. **credenziali WordPress** in `~/.hermes/secrets/wp-credentials.env` (600) e `WP_BASIC_AUTH` in `~/.hermes/.env`
+   — **le consegna l'autore, mai in chat**
+4. **server MCP del sito** in Hermes, provando **`Authorization` e poi `Auth`** e tenendo quello che risponde
+5. **vault** in `OBSIDIAN_VAULT_PATH`; **variabili** `SEO_WORK_DIR`, `SITE_DOMAIN`, `SITE_MCP_URL`,
+   `WP_CREDENTIALS`, `GA4_PROPERTY_ID`
+6. **`CONFIGURAZIONE.md`** compilato nella cartella di lavoro
+7. **la prova**: `python3 scripts/verifica-avvio.py` — quello che manca si dichiara, non si inventa
+8. **primo set di keyword**: prima le chiavi gratis (`scripts/check_credentials.py`), poi Search Console, semi,
+   suggerimenti, volume dove c'è → `shared/keywords/` con il suo indice
 
-**Dettaglio passo per passo, con i comandi e il controllo finale**: `references/primo-avvio.md`.
+Due trappole che costano un'ora ciascuna: **il file delle credenziali è un `.env`, non uno script** — si legge
+riga per riga, **mai `source`**: un valore con spazi tronca la shell, e il 401 che ne esce sembra un errore
+dell'API; e **un 405 all'handshake MCP significa credenziali accettate e metodo sbagliato**, non credenziale
+sbagliata.
 
-**Regola**: si chiede all'autore tutto quello che non si sa e **non si inventa nessun valore**. Un nome
-generico che resta nel testo senza la sua corrispondenza reale è un errore di configurazione, non una
-licenza a improvvisare.
+**Regola**: tutto quello che non si sa si chiede all'autore, e **nessun valore si inventa**.
 
 ### 1. Onboarding (`onboard`)
 
@@ -894,17 +753,8 @@ sito**, con titolo SEO, promessa e parola chiave: da lanciare prima di ogni conf
 d'avvio: cartella di lavoro, database, credenziali senza mostrarne i valori, MCP provando entrambi gli header,
 REST, Maton).
 
-**Versioni precedenti del `SKILL.md`: non dentro l'albero della skill.** Una copia di `SKILL.md`
-dentro la skill crea una skill omonima e **rompe il caricamento per nome** (è successo davvero, fino
-al 01/10/2026: `skill_view` rispondeva *Ambiguous skill name*). L'istantanea sta fuori, in `~/seo-content/archivio/seo-content-istantanea/`.
-
-**Due copie, e non sono la stessa cosa.** `~/.hermes/skills/productivity/seo-content/` è la copia che
-Hermes carica **ed è quella che il curator di Hermes aggiorna da solo** (la lezione, la prova e il registro
-stanno in `~/.hermes/skills/.curator_ledger.jsonl`); `~/seo-content/archivio/seo-content-istantanea/` è un'istantanea che
-**non si aggiorna da sola** e invecchia in silenzio. Prima di modificare una regola: **confrontare le due
-copie** (`diff -rq <istantanea> <installata>`) e modificare **l'installata**; poi rigenerare l'istantanea, che
-serve come storico. **Mai copiare l'istantanea sopra l'installata senza riallinearla**, altrimenti si
-cancellano le patch che il curator ha già applicato.
+**Due copie della skill e il curator di Hermes** (quale si modifica, cosa è l'istantanea, cosa non
+sovrascrivere): `references/pubblicazione-e-contributi.md` §«Due copie».
 
 **Prima di rendere pubblica la repo** (scansione dei segreti, cosa rendere generico, licenza, igiene del
 commit, regole per le PR): **`references/pubblicazione-e-contributi.md`**.

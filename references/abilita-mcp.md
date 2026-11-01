@@ -39,7 +39,7 @@ attivi**: il gruppo `ai-editor` (8 abilità) lo porta il plugin dell'editor AI, 
 totale è **273** e con esso attivo torna **288** — stesso sito, stesso giorno, verificato il 13/10/2026.
 Quindi quando un gruppo che c'era non compare più, **prima di scrivere «non esiste più» si controlla lo
 stato dei plugin**: lo stato vero è sul singolo plugin (`…/wp/v2/plugins/<cartella>/<slug>` →
-`network-active`), non sulla lista, che dà il valore per-sito (vedi «Difetti noti del sito» in `SKILL.md`).
+`network-active`), non sulla lista, che dà il valore per-sito (vedi `references/difetti-sito.md`).
 
 **Il namespace è un segnaposto: si risolve, non si dà per scontato.** Nel testo `seo/…` è un nome
 **generico** (vedi `configurazione.md`): sul sito vero quel gruppo si chiama `<slug-del-plugin>-seo`, e il nome

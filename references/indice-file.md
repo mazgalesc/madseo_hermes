@@ -11,43 +11,45 @@ La skill è divisa in due: **questo file** (il banco di lavoro: regole, strument
 **`references/`** (i cataloghi: ricette, trappole, regole di scrittura). **Se cerchi una regola e non è
 qui, è in uno di questi file.**
 
-**I 38 file di `references/`, tutti qui** (i pesi misurati: se un peso non torna,
+**I 40 file di `references/`, tutti qui** (i pesi misurati: se un peso non torna,
 il file è cambiato — aggiornare la riga).
 
 *Il lavoro, nell'ordine in cui si usa:*
 
 | File | Cosa contiene | Peso |
 |---|---|---|
-| **`references/ricerca-webcmd.md`** | il giro di ricerca: ambiente e sessione, i programmi (SERP, Quora, Reddit, X, LinkedIn), come si legge una SERP, il blocco «Le persone hanno chiesto anche», la controprova dei suggerimenti, i segnali da non lasciar passare | 25 KB |
-| **`references/ricerca-omnichannel.md`** | i canali della ricerca in ordine di lavoro, cosa si cerca in ciascuno, cosa si scrive nel rapporto | 10 KB |
-| **`references/parole-chiave.md`** | **quali parole chiave scegliere e perché**: prima l'intento poi il volume, le 4 categorie di intento lette dalla SERP, i 5 passi, **cosa possiamo misurare — due livelli: gratis sempre, a pagamento opzionale (DataForSEO) con le regole anti-spreco**, una keyword primaria = un contenuto, la revisione trimestrale | 13 KB |
-| **`references/parole-chiave-strumenti.md`** | **il banco degli attrezzi delle parole chiave** (incorporato il 17/10/2026): le regole sui dati, l'ordine del lavoro, l'audit dei contenuti contro le keyword che dichiarano, il giudizio sull'intento sulla SERP vera, i programmi con i comandi (`gsc.py`, `suggest.py`, `bing.py`, `wikipedia.py`, `volumes.py`, `check_urls.py`, `check_credentials.py`), la verifica delle credenziali **gratis prima di spendere**, le trappole, la verifica finale | 22 KB |
-| **`references/free-keyword-data-sources.md`** | **la tabella delle fonti delle parole chiave**: cosa dà gratis e cosa a consumo, prezzi e limiti dichiarati (i prezzi si riverificano sulla pagina prima di citarli) | 10 KB |
-| **`references/scrittura-articolo.md`** | come si scrive un articolo: **il test prima di scrivere**, le regole editoriali e il livello del lettore, formato e lunghezza, i blocchi dell'editor, il blocco FAQ, il glossario | 23 KB |
-| **`references/audit-contenuti-pubblicati.md`** | il giro di verifica degli articoli **già pubblicati**: le 5 fonti, la pagina intera al secondo lettore, le trappole della misurazione (i difetti falsi), dove sta la causa, la forma del rapporto | ≈33 KB |
-| **`references/audit-bozze.md`** | il giro di verifica delle **bozze**: cosa cambia rispetto ai pubblicati, i campi da controllare, i comandi che verificano citazioni e dati, i difetti che ricorrono in tutte le bozze, la forma del rapporto | *(peso da misurare)* |
+| **`references/ricerca-webcmd.md`** | il giro di ricerca: ambiente e sessione, i programmi (SERP, Quora, Reddit, X, LinkedIn), come si legge una SERP, il blocco «Le persone hanno chiesto anche», la controprova dei suggerimenti, i segnali da non lasciar passare | 26 KB |
+| **`references/ricerca-omnichannel.md`** | i canali della ricerca in ordine di lavoro, cosa si cerca in ciascuno, cosa si scrive nel rapporto | 11 KB |
+| **`references/parole-chiave.md`** | **quali parole chiave scegliere e perché**: prima l'intento poi il volume, le 4 categorie di intento lette dalla SERP, i 5 passi, **cosa possiamo misurare — due livelli: gratis sempre, a pagamento opzionale (DataForSEO) con le regole anti-spreco**, una keyword primaria = un contenuto, la revisione trimestrale | 14 KB |
+| **`references/parole-chiave-strumenti.md`** | **il banco degli attrezzi delle parole chiave** (incorporato il 17/10/2026): le regole sui dati, l'ordine del lavoro, l'audit dei contenuti contro le keyword che dichiarano, il giudizio sull'intento sulla SERP vera, i programmi con i comandi (`gsc.py`, `suggest.py`, `bing.py`, `wikipedia.py`, `volumes.py`, `check_urls.py`, `check_credentials.py`), la verifica delle credenziali **gratis prima di spendere**, le trappole, la verifica finale | 25 KB |
+| **`references/free-keyword-data-sources.md`** | **la tabella delle fonti delle parole chiave**: cosa dà gratis e cosa a consumo, prezzi e limiti dichiarati (i prezzi si riverificano sulla pagina prima di citarli) | 11 KB |
+| **`references/scrittura-articolo.md`** | come si scrive un articolo: **il test prima di scrivere**, le regole editoriali e il livello del lettore, formato e lunghezza, i blocchi dell'editor, il blocco FAQ, il glossario | 25 KB |
+| **`references/audit-contenuti-pubblicati.md`** | il giro di verifica degli articoli **già pubblicati**: le 5 fonti, la pagina intera al secondo lettore, le trappole della misurazione (i difetti falsi), dove sta la causa, la forma del rapporto | ≈35 KB |
+| **`references/audit-bozze.md`** | il giro di verifica delle **bozze**: cosa cambia rispetto ai pubblicati, i campi da controllare, i comandi che verificano citazioni e dati, i difetti che ricorrono in tutte le bozze, la forma del rapporto | 20 KB |
 | **`references/ambiente-setup-maton.md`** | **l'ambiente**: comando di controllo, componenti (MCP, REST, Maton, Scrapling, webcmd, immagini, **fonti facoltative: DataForSEO, Bing Webmaster, Parallel**), configurazione webcmd, accessi, siti disponibili, chiamate a Search Console e Analytics | ≈13 KB |
-| **`references/abilita-mcp.md`** | **il catalogo MCP**: abilità `seo/*` e `gutenberg/*`, lettura e scrittura a blocchi, la trappola `id`/`post_id`, i valori di stile del tema, i pattern | ≈10 KB |
-| **`references/primo-avvio.md`** | **la procedura 0 in dettaglio**: cosa serve, gli 8 passi con i comandi, il controllo finale, il template di `CONFIGURAZIONE.md` | ≈7 KB |
+| **`references/abilita-mcp.md`** | **il catalogo MCP**: abilità `seo/*` e `gutenberg/*`, lettura e scrittura a blocchi, la trappola `id`/`post_id`, i valori di stile del tema, i pattern | ≈12 KB |
+| **`references/primo-avvio.md`** | **la procedura 0 in dettaglio**: cosa serve, gli 8 passi con i comandi, il controllo finale, il template di `CONFIGURAZIONE.md` | ≈13 KB |
 | **`references/configurazione.md`** | **i nomi generici del testo e i valori reali di una installazione**: la mappa dei nomi, le variabili d'ambiente degli script (**comprese le facoltative**), la regola «nessun valore di una installazione entra nel repository» | ≈3 KB |
 | **`references/vault-obsidian.md`** | **il progetto editoriale in un vault Obsidian**: la nota di un contenuto (promessa, struttura, collegamenti, fonti con le date, verifiche), la struttura delle cartelle, il ponte col database, e perché il grafo mostra le pagine orfane | ≈7 KB |
-| **`references/pianificazione-e-duplicati.md`** | **prima di scegliere un titolo**: l'inventario in quattro elenchi, la promessa di un contenuto, il confronto sui contenuti vivi, la mappa del cluster, le pagine orfane | ≈8 KB |
+| **`references/pianificazione-e-duplicati.md`** | **prima di scegliere un titolo**: l'inventario in quattro elenchi, la promessa di un contenuto, il confronto sui contenuti vivi, la mappa del cluster, le pagine orfane | ≈9 KB |
 | **`references/fonti.md`** | **a chi credere**: la gerarchia delle fonti (ufficiale → normativa/scientifica → API → stampa → community), i divieti (attribuzioni anonime, dataset e «team» inventati), le prove di prima mano, il «non l'ho verificato» | ≈8 KB |
 | **`references/controlli-verifica.md`** | **prima di dire «pronto»**: i controlli incrociati che mancavano — conteggi annunciati vs elenchi, aritmetica, riquadro vs corpo, sintesi vs prova, promesse, blocchi, artefatti, alt, affiliazione | ≈10 KB |
 | **`references/suite-analitica.md`** | **misurare i risultati**: la chiamata di Search Console, le tre analisi con le soglie, il controllo che i due URL esistano prima di parlare di cannibalizzazione, cosa fare quando i dati non ci sono | 4 KB |
-| **`references/pubblicazione-e-contributi.md`** | **portare la skill su una repo pubblica**: la scansione dei segreti (e la trappola del valore troncato dalla shell), cosa rendere generico, licenza, igiene del commit, cosa deve contenere una PR | ≈11 KB |
+| **`references/pubblicazione-e-contributi.md`** | **portare la skill su una repo pubblica**: la scansione dei segreti (e la trappola del valore troncato dalla shell), cosa rendere generico, licenza, igiene del commit, cosa deve contenere una PR | ≈12 KB |
+| **`references/verifica-scritture.md`** | **come si verifica davvero una modifica SEO**: schema contro la sostanza della pagina, HowTo equivalenti scritti con altre parole, FAQ in `<dt>` con gli accenti in entità HTML, e la regola che `{"success": true}` non è la prova che il campo è stato scritto. Estratto da `SKILL.md` il 01/11/2026 | 5 KB |
 | **`references/trappole.md`** | **tutte** le trappole verificate in un file solo: codici HTTP, fonti, pagine a zero impression, schema, meta, marcatori rotti, blocchi e media, domanda, bozze | 39 KB |
-| **`references/regole-di-controllo.md`** | le regole dettate dall'autore il 30/09/2026 e come si applicano a ogni passo, **più i tre esiti della manutenzione** (aggiornare, consolidare, togliere) con i criteri | 4 KB |
+| **`references/regole-di-controllo.md`** | le regole dettate dall'autore il 30/09/2026 e come si applicano a ogni passo, **più i tre esiti della manutenzione** (aggiornare, consolidare, togliere) con i criteri | 5 KB |
+| **`references/difetti-sito.md`** | **i difetti del sito verificati, da non riscoprire**: i casi con la data e il numero misurato (alt, il glossario che riscrive dentro i tag, HowTo ritirati, dichiarazione di affiliazione assente, cannibalizzazione, identità del sito). Estratto da `SKILL.md` il 01/11/2026 — è un rapporto d'audit: **i numeri si rifanno, non si ereditano** | 6 KB |
 
 *Tecnica e misure di questo sito:*
 
 | File | Cosa contiene | Peso |
 |---|---|---|
-| **`references/immagini-e-stili.md`** | WebP non PNG, alt, pesi misurati, stile di copertine e infografiche | 9 KB |
+| **`references/immagini-e-stili.md`** | WebP non PNG, alt, pesi misurati, stile di copertine e infografiche | 8 KB |
 | **`references/stile-copertine.md`** | lo stile delle immagini in evidenza, misurato sul sito | 4 KB |
 | **`references/stile-infografiche.md`** | lo stile delle infografiche dentro gli articoli, misurato sul sito | 5 KB |
 | **`references/nomi-e-query.md`** | la regola dei nomi, i suggerimenti sbagliati, le sigle ambigue, i suffissi delle varianti immagine, le trappole delle abilità MCP | 4 KB |
-| **`references/schema-google-support.md`** | cosa Google supporta davvero nello schema (e cosa ha ritirato) | 3 KB |
+| **`references/schema-google-support.md`** | cosa Google supporta davvero nello schema, cosa ha ritirato, e **quale schema scegliere articolo per articolo** (con i 14 campi di `update-schema-data` e le regole pratiche) | 7 KB |
 
 *Metodo e cataloghi (documenti dell'autore, portati dalla skill OpenClaw — diversi sono in inglese):*
 
@@ -67,7 +69,7 @@ non vale qui, e la riga dice quale; *da verificare* = non è stata controllata c
 | **`references/geo-sync-logic.md`** | ancoraggio delle relazioni per l'AI search | 1 KB | **vivo** |
 | **`references/local-compliance-benchmarks.md`** | standard di SEO locale e conformità | 1 KB | **da verificare** — il sito non ha Local Business configurato: da controllare prima di usarlo |
 | **`references/humanizer_config.json`** | le parole bandite della passata di umanizzazione | 1 KB | **vivo** — usato dal §4 del `SKILL.md` |
-| **`references/db-schema.md`** | la tabella `content_calendar`, colonne e stato del riempimento | 6 KB | **vivo** — corretto il 01/10/2026 (mancavano due colonne, e le tre nuove non c'erano) |
+| **`references/db-schema.md`** | la tabella `content_calendar`, colonne e stato del riempimento | 8 KB | **vivo** — corretto il 01/10/2026 (mancavano due colonne, e le tre nuove non c'erano) |
 
 **⚠️ Nota sui documenti dell'autore (aggiornato il 14/10/2026).** Due di questi chiedono cose che su
 questa macchina **non si usano** e vanno letti con questa avvertenza:

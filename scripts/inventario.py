@@ -272,7 +272,7 @@ def main() -> int:
     elenchi = {}
     for tipo, stato, etichetta in (("posts", "publish", "pubblicati"), ("posts", "draft", "bozze"),
                                    ("posts", "future", "programmati"), ("posts", "trash", "cestinati"),
-                                   ("pages", "publish", "pagine")):
+                                   ("pages", "publish", "pagine"), ("pages", "draft", "pagine in bozza")):
         chiave = f"{tipo}:{stato}"
         totale, elementi = elenco_rest(segreti, tipo, stato, args.limite)
         elenchi[chiave] = (totale, elementi)
@@ -285,7 +285,7 @@ def main() -> int:
         f"**Rigenerato il {oggi} leggendo il sito** (REST `X-WP-Total` + `seo/get-post-seo`). "
         f"**{elenchi['posts:publish'][0]} pubblicati**, **{elenchi['posts:draft'][0]} bozze**, "
         f"{elenchi['posts:future'][0]} programmati, {elenchi['posts:trash'][0]} nel cestino, "
-        f"{elenchi['pages:publish'][0]} pagine.",
+        f"{elenchi['pages:publish'][0]} pagine ({elenchi['pages:draft'][0]} in bozza).",
         "",
         "**Questo file invecchia da solo: si rigenera con `scripts/inventario.py` prima di ogni "
         "confronto**, non si cita a memoria. Un inventario vecchio dice «libera» a una promessa "
@@ -296,9 +296,9 @@ def main() -> int:
     ]
     for etichetta, chiave in (("Pubblicati", "posts:publish"), ("Bozze", "posts:draft"),
                               ("Programmati", "posts:future"), ("Cestinati", "posts:trash"),
-                              ("Pagine", "pages:publish")):
+                              ("Pagine", "pages:publish"), ("Pagine in bozza", "pages:draft")):
         totale, elementi = elenchi[chiave]
-        if not elementi and chiave in ("posts:future", "posts:trash"):
+        if not elementi and chiave in ("posts:future", "posts:trash", "pages:draft"):
             continue
         righe += ["", f"## {etichetta} ({totale})", ""]
         for e in elementi:
